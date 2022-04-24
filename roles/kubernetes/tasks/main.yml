@@ -1,0 +1,151 @@
+---
+- name: remove unwanted configuration files
+  loop:
+    - /etc/apt/apt.conf.d/70debconf
+    - /etc/sysctl/sysctl.d/99-sysctl.conf
+    - /etc/sysctl/sysctl.d/README.sysctl
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+
+- name: create necessary directories
+  loop:
+    - /etc/cni/net.d
+    - /etc/containerd
+    - /opt/cni/bin
+    - /usr/local/lib/systemd/system
+  ansible.builtin.file:
+    group: root
+    mode: 0755
+    owner: root
+    path: "{{ item }}"
+    state: directory
+
+- name: push configuration files
+  loop: 
+    - etc/apt/apt.conf.d/99minify
+    - etc/apt/sources.list
+    - etc/cni/net.d/99-critest.conflist
+    - etc/containerd/config.toml
+    - etc/crictl.yaml
+    - etc/modules-load.d/ansible.conf
+    - usr/local/lib/systemd/system/containerd.service
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: /{{ item }}
+    owner: root
+    group: root
+    mode: 0644
+
+- name: clear packages
+  ansible.builtin.apt:
+    state: absent
+    purge: true
+    pkg: "{{ packages }}"
+
+- name: upgrade system
+  ansible.builtin.apt:
+    autoclean: true
+    autoremove: true
+    update_cache: true
+    upgrade: dist
+
+- name: install QEMU guest agent
+  ansible.builtin.apt:
+    name: qemu-guest-agent
+    state: present
+
+- name: load kernel modules
+  loop: "{{ modules }}"
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+
+- name: set sysctl parameters
+  loop: "{{ sysctl }}"
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    sysctl_file: /etc/sysctl.d/99-ansible.conf
+    sysctl_set: true
+    value: "{{ item.value }}"
+
+- name: install runc
+  ansible.builtin.get_url:
+    checksum: sha256:https://github.com/opencontainers/runc/releases/download/v{{ runc_version }}/runc.sha256sum
+    dest: /usr/local/sbin/runc
+    mode: 0755
+    url: https://github.com/opencontainers/runc/releases/download/v{{ runc_version }}/runc.{{ go_arch }}
+
+- name: install CNI plugins
+  vars:
+    checksum: sha256:{{ url }}.sha256
+    dest: /opt/cni/bin
+    filename: cni-plugins-linux-{{ go_arch }}-v{{ cni_plugins_version }}.tgz
+    url: https://github.com/containernetworking/plugins/releases/download/v{{ cni_plugins_version }}/{{ filename }}
+  ansible.builtin.include_tasks: install.yml
+
+- name: install containerd
+  vars:
+    checksum: sha256:{{ url }}.sha256sum
+    dest: /usr/local
+    filename: containerd-{{ containerd_version }}-linux-{{ go_arch }}.tar.gz
+    url: https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/{{ filename }}
+  ansible.builtin.include_tasks: install.yml
+
+- name: install nerdctl
+  vars:
+    checksum: sha256:https://github.com/containerd/nerdctl/releases/download/v{{ nerdctl_version }}/SHA256SUMS
+    dest: /usr/local/bin
+    filename: nerdctl-{{ nerdctl_version }}-linux-{{ go_arch }}.tar.gz
+    url: https://github.com/containerd/nerdctl/releases/download/v{{ nerdctl_version }}/{{ filename }}
+    include:
+      - nerdctl
+  ansible.builtin.include_tasks: install.yml
+
+- name: get crictl checksum
+  register: crictl_sha256
+  vars:
+    checksum: "{{ url }}.sha256"
+    dest: /usr/local/bin
+    filename: crictl-v{{ cri_tools_version }}-linux-{{ go_arch }}.tar.gz
+    url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ cri_tools_version }}/{{ filename }}
+  uri:
+    url: "{{ checksum }}"
+    return_content: true
+
+- name: install crictl
+  vars:
+    checksum: sha256:{{ crictl_sha256.content.strip()  }}
+    dest: /usr/local/bin
+    filename: crictl-v{{ cri_tools_version }}-linux-{{ go_arch }}.tar.gz
+    url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ cri_tools_version }}/{{ filename }}
+  ansible.builtin.include_tasks: install.yml
+
+- name: get critest checksum
+  register: critest_sha256
+  vars:
+    checksum: "{{ url }}.sha256"
+    dest: /usr/local/bin
+    filename: critest-v{{ cri_tools_version }}-linux-{{ go_arch }}.tar.gz
+    url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ cri_tools_version }}/{{ filename }}
+  uri:
+    url: "{{ checksum }}"
+    return_content: true
+
+- name: install critest
+  vars:
+    checksum: sha256:{{ critest_sha256.content.strip()  }}
+    dest: /usr/local/bin
+    filename: critest-v{{ cri_tools_version }}-linux-{{ go_arch }}.tar.gz
+    url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ cri_tools_version }}/{{ filename }}
+  ansible.builtin.include_tasks: install.yml
+
+- name: start services
+  loop:
+    - qemu-guest-agent
+    - containerd
+  ansible.builtin.systemd:
+    daemon_reload: true
+    enabled: true
+    name: "{{ item }}"
+    state: started

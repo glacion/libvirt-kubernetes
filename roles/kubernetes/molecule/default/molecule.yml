@@ -1,0 +1,32 @@
+---
+driver:
+  name: vagrant
+
+  provider:
+    name: libvirt
+
+platforms:
+  - name: debian
+    box: debian/bullseye64
+    cpus: 8
+    memory: 8192
+    provider_raw_config_args:
+      - channel :type => 'unix', :target_name => 'org.qemu.guest_agent.0', :target_type => 'virtio'
+    config_options:
+      ssh.keep_alive: yes
+      ssh.remote_user: vagrant
+      synced_folder: false
+
+dependency:
+  name: galaxy
+  
+provisioner:
+  name: ansible
+
+verifier:
+  name: testinfra
+  v: true
+
+lint: |
+  set -e
+  ansible-lint

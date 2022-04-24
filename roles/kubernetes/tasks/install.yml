@@ -1,0 +1,19 @@
+---
+- name: download 
+  ansible.builtin.get_url:
+    checksum: "{{ checksum }}"
+    dest: /tmp
+    group: root
+    mode: 0755
+    owner: root
+    url: "{{ url }}"
+
+- name: extract archive
+  ansible.builtin.unarchive:
+    dest: "{{ dest }}"
+    group: root
+    include: "{{ include | default([]) }}"
+    mode: 0755
+    owner: root
+    remote_src: yes
+    src: /tmp/{{ filename }}

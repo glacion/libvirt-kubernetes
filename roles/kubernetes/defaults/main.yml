@@ -1,0 +1,6 @@
+---
+runc_version: 1.1.1
+cni_plugins_version: 1.1.1  
+cri_tools_version: 1.23.0
+containerd_version: 1.6.2
+nerdctl_version: 0.19.0

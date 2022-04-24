@@ -1,0 +1,14 @@
+Acquire {
+  Languages "none";
+};
+APT {
+  AutoRemove {
+    RecommendsImportant "false";
+    SuggestsImportant   "false";
+  };
+  Get {
+    Assume-Yes         "true";
+    Fix-Broken         "true";
+    Install-Recommends "false";
+  };
+};
