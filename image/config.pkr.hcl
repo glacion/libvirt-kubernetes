@@ -1,3 +1,9 @@
+locals {
+  build_root = "../build/bullseye"
+  build_path = "${local.build_root}/${local.date}"
+  date       = timestamp()
+}
+
 packer {
   required_plugins {
     qemu = {
@@ -14,18 +20,17 @@ packer {
 data "sshkey" "key" {}
 
 source "qemu" "debian" {
-  disk_image       = true
-  disk_size        = "4G"
-  format           = "qcow2"
-  iso_checksum     = "file:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS"
-  iso_url          = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2"
+  disk_image   = true
+  disk_size    = "4G"
+  format       = "qcow2"
+  iso_checksum = "file:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS"
+  iso_url      = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2"
 
   accelerator = "kvm"
-  firmware    = "/usr/share/OVMF/OVMF_CODE.fd"
   headless    = true
 
-  output_directory = "build"
-  vm_name          = "debian"
+  output_directory = local.build_path
+  vm_name          = "debian.qcow2"
 
   ssh_private_key_file = data.sshkey.key.private_key_path
   ssh_username         = "debian"
@@ -48,8 +53,21 @@ build {
   ]
 
   provisioner "ansible" {
+    command       = "../.venv/bin/ansible-playbook"
     playbook_file = "site.yml"
     use_proxy     = false
     user          = "debian"
+  }
+
+  post-processor "manifest" {
+    output     = "${local.build_path}/manifest.json"
+    strip_path = true
+  }
+
+  post-processor "shell-local" {
+    inline = [
+      "rm -v \"$(realpath -s ${local.build_root}/latest)\" || true",
+      "ln -sv \"$(realpath -s ${local.build_path})\" \"$(realpath -s ${local.build_root})/latest\"",
+    ]
   }
 }

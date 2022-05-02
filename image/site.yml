@@ -4,4 +4,4 @@
   hosts: default
   become: yes
   roles:
-    - common
+    - ../roles/kubernetes
