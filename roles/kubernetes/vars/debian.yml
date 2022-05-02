@@ -1,0 +1,23 @@
+---
+apt_install:
+  - bash-completion
+  - conntrack
+  - ethtool
+  - qemu-guest-agent
+  - socat
+
+apt_remove:
+  - apt-listchanges
+  - debconf-i18n
+  - debian-faq
+  - doc-debian
+  - gettext-base
+  - krb5-locales
+  - locales
+  - mailcap
+  - man-db
+  - manpages
+  - nano
+  - rsyslog
+  - tasksel
+  - wamerican

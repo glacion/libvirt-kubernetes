@@ -17,5 +17,5 @@ parameters: Set[Tuple[str, str | int]] = {
 
 
 @pytest.mark.parametrize("parameter,value", parameters)
-def test_executables(host, parameter, value):
+def test_sysctl_parameters(host, parameter, value):
     assert host.sysctl(parameter) == value

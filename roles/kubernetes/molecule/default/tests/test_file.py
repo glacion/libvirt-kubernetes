@@ -28,6 +28,11 @@ executables: Set[str] = {
     "/usr/local/bin/ctr",
     "/usr/local/bin/crictl",
     "/usr/local/bin/critest",
+    "/usr/local/bin/etcd",
+    "/usr/local/bin/etcdctl",
+    "/usr/local/bin/kubeadm",
+    "/usr/local/bin/kubectl",
+    "/usr/local/bin/kubelet",
     "/usr/local/bin/nerdctl",
     "/usr/local/sbin/runc",
 }

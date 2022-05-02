@@ -1,0 +1,23 @@
+---
+- name: create completion directory
+  ansible.builtin.file:
+    group: root
+    mode: 0755
+    owner: root
+    path: /usr/local/share/bash-completion/completions
+    state: directory
+
+- name: push completion scripts
+  loop:
+    - usr/local/share/bash-completion/completions/crictl
+    - usr/local/share/bash-completion/completions/etcdctl
+    - usr/local/share/bash-completion/completions/kubeadm
+    - usr/local/share/bash-completion/completions/kubectl
+    - usr/local/share/bash-completion/completions/nerdctl
+    - usr/local/share/bash-completion/completions/runc
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /{{ item }}
+    owner: root
+    group: root
+    mode: 0644

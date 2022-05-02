@@ -19,13 +19,15 @@ platforms:
 
 dependency:
   name: galaxy
-  
+
 provisioner:
   name: ansible
 
 verifier:
   name: testinfra
-  v: true
+  options:
+    v: true
+    s: true
 
 lint: |
   set -e

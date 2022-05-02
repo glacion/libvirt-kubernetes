@@ -1,0 +1,204 @@
+#!bash
+
+_etcdctl_list() {
+	local IFS=$'\n'
+	local wd="$cur"
+	local -a tokens
+	if ! etcdctl ls "$wd" &> /dev/null; then
+		wd=$(dirname "$wd")
+	fi
+
+	x=$( etcdctl ls -p "/$wd" ) &&
+	while read -r name; do
+		if [[ "$name" == "$cur"* ]]; then
+			if [[ "$*" == *onlydirs* ]]; then
+				if [[ "$name" == */ ]]; then
+					tokens+=( "$name" )
+				fi
+			else
+				tokens+=( "$name" )
+			fi
+		fi
+		if [[ "$name" == */ ]]; then
+			compopt -o nospace
+		fi
+	done <<< "$x"
+
+	COMPREPLY+=( "${tokens[@]}" )
+}
+
+_etcdctl_ls()
+{
+	case "$cur" in
+		-*)
+			COMPREPLY=( $( compgen -W "--sort --recursive -p --help" -- "$cur" ) )
+			;;
+		*)
+			_etcdctl_list onlydirs
+			;;
+	esac
+}
+
+_etcdctl_mk()
+{
+	case "$cur" in
+		-*)
+			COMPREPLY=( $( compgen -W "--ttl" -- "$cur" ) )
+			;;
+		*)
+			case "$prev" in
+				--ttl)
+					;;
+				*)
+					_etcdctl_list onlydirs
+					compopt -o nospace
+					;;
+			esac
+			;;
+	esac
+}
+
+_etcdctl_mkdir()
+{
+	case "$cur" in
+		-*)
+			COMPREPLY=( $( compgen -W "--ttl" -- "$cur" ) )
+			;;
+		*)
+			case "$prev" in
+				--ttl)
+					;;
+				*)
+					_etcdctl_list
+					;;
+			esac
+			;;
+	esac
+}
+
+_etcdctl_rm()
+{
+	case "$cur" in
+		-*)
+			COMPREPLY=( $( compgen -W "--dir --recursive --with-value --with-index" -- "$cur" ) )
+			;;
+		*)
+			case "$prev" in
+				--with-value|--with-index)
+					;;
+				*)
+					_etcdctl_list
+					;;
+			esac
+			;;
+	esac
+}
+
+_etcdctl_rmdir()
+{
+	_etcdctl_list onlydirs
+}
+
+_etcdctl_get()
+{
+	case "$cur" in
+		-*)
+			COMPREPLY=( $( compgen -W "--sort --consistent" -- "$cur" ) )
+			;;
+		*)
+			_etcdctl_list
+			;;
+	esac
+}
+
+_etcdctl_set()
+{
+	case "$cur" in
+		-*)
+			COMPREPLY=( $( compgen -W "--ttl --swap-with-value --swap-with-index" -- "$cur" ) )
+			;;
+		*)
+			case "$prev" in
+				--ttl|--swap-with-value|--swap-with-index)
+					;;
+				*)
+					if [ "$prev" == "set" ] || [[ "$prev" != /* ]]; then
+						_etcdctl_list
+					fi
+					;;
+			esac
+	esac
+}
+
+_etcdctl_etcdctl()
+{
+	case "$cur" in
+		-*)
+			COMPREPLY=( $( compgen -W "--debug --no-sync --output -o --peers -C --cert-file --key-file --ca-file --help -h --version -v" -- "$cur" ) )
+			;;
+		*)
+			case "$prev" in
+				--output|-o)
+					COMPREPLY=( $( compgen -W "json simple" -- "$cur" ) )
+					;;
+				--cert-file|--key-file|--ca-file)
+					COMPREPLY=( $( compgen -f -- "$cur" ) )
+					;;
+				--peers|-C)
+					;;
+				*)
+					COMPREPLY=( $( compgen -W "mk mkdir rm rmdir get ls set setdir update updatedir watch exec-watch help h" -- "$cur" ) )
+					;;
+			esac
+			;;
+	esac
+
+
+}
+
+_etcdctl()
+{
+	local commands="
+		mk
+		mkdir
+		rm
+		rmdir
+		get
+		ls
+		set
+		setdir
+		update
+		updatedir
+		watch
+		exec-watch
+		help
+		h
+		"
+
+	COMPREPLY=()
+	local cur prev words cword
+	_get_comp_words_by_ref -n : cur prev words cword
+
+	local command='etcdctl'
+	local counter=1
+	while [ $counter -lt $cword ]; do
+		case "${words[$counter]}" in
+			-*)
+				;;
+			*)
+				command="${words[$counter]}"
+				cpos=$counter
+				(( cpos++ ))
+				break
+				;;
+		esac
+		(( counter++ ))
+	done
+
+	local completions_func=_etcdctl_${command}
+	declare -F $completions_func >/dev/null && $completions_func
+
+	return 0
+}
+
+complete -o filenames -F _etcdctl etcdctl

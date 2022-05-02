@@ -1,0 +1,62 @@
+---
+- name: push crictl configuration
+  loop:
+    - etc/crictl.yaml
+  ansible.builtin.copy:
+    dest: /etc/crictl.yaml
+    group: root
+    mode: 0644
+    owner: root
+    src: etc/crictl.yaml
+
+- name: get crictl checksum
+  register: crictl_sha256
+  ansible.builtin.uri:
+    return_content: true
+    url: "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ cri_tools_version }}/\
+          crictl-v{{ cri_tools_version }}-linux-{{ go_arch }}.tar.gz.sha256"
+
+- name: download crictl archive
+  ansible.builtin.get_url:
+    checksum: sha256:{{ crictl_sha256.content | trim }}
+    dest: /tmp
+    group: root
+    mode: 0644
+    owner: root
+    url: "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ cri_tools_version }}/\
+          crictl-v{{ cri_tools_version }}-linux-{{ go_arch }}.tar.gz"
+
+- name: extract crictl archive
+  ansible.builtin.unarchive:
+    dest: /usr/local/bin
+    group: root
+    mode: 0755
+    owner: root
+    remote_src: yes
+    src: /tmp/crictl-v{{ cri_tools_version }}-linux-{{ go_arch }}.tar.gz
+
+- name: get critest checksum
+  register: critest_sha256
+  ansible.builtin.uri:
+    return_content: true
+    url: "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ cri_tools_version }}/\
+          critest-v{{ cri_tools_version }}-linux-{{ go_arch }}.tar.gz.sha256"
+
+- name: download critest archive
+  ansible.builtin.get_url:
+    checksum: sha256:{{ critest_sha256.content | trim }}
+    dest: /tmp
+    group: root
+    mode: 0644
+    owner: root
+    url: "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ cri_tools_version }}/\
+          critest-v{{ cri_tools_version }}-linux-{{ go_arch }}.tar.gz"
+
+- name: extract critest archive
+  ansible.builtin.unarchive:
+    dest: /usr/local/bin
+    group: root
+    mode: 0755
+    owner: root
+    remote_src: yes
+    src: /tmp/critest-v{{ cri_tools_version }}-linux-{{ go_arch }}.tar.gz

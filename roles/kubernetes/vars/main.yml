@@ -1,21 +1,21 @@
 ---
-modules:
+kernel_modules:
   - br_netfilter
   - overlay
 
-sysctl:
-  - key: net.ipv6.conf.all.forwarding 
+sysctl_parameters:
+  - key: net.ipv6.conf.all.forwarding
     value: 1
   - key: net.ipv4.ip_forward
     value: 1
-  - key: kernel.keys.root_maxbytes 
+  - key: kernel.keys.root_maxbytes
     value: 25000000
   - key: kernel.keys.root_maxkeys
     value: 1000000
   - key: kernel.panic
     value: 10
   - key: kernel.panic_on_oops
-    value: 1 
+    value: 1
   - key: vm.overcommit_memory
     value: 1
   - key: vm.panic_on_oom
@@ -24,22 +24,6 @@ sysctl:
     value: 1
   - key: net.bridge.bridge-nf-call-ip6tables
     value: 1
-
-packages:
-  - apt-listchanges
-  - debconf-i18n
-  - debian-faq
-  - doc-debian
-  - gettext-base
-  - krb5-locales
-  - locales
-  - mailcap
-  - man-db
-  - manpages
-  - nano
-  - rsyslog
-  - tasksel
-  - wamerican
 
 go_arch: "{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}"
 go_arch_map:

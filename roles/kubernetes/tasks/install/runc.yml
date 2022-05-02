@@ -1,0 +1,10 @@
+---
+- name: install runc
+  ansible.builtin.get_url:
+    checksum: "sha256:\
+               https://github.com/opencontainers/runc/releases/download/v{{ runc_version }}/\
+               runc.sha256sum"
+    dest: /usr/local/sbin/runc
+    mode: 0755
+    url: "https://github.com/opencontainers/runc/releases/download/v{{ runc_version }}/\
+          runc.{{ go_arch }}"

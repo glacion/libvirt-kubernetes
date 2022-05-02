@@ -1,0 +1,28 @@
+---
+- name: download etcd archive
+  ansible.builtin.get_url:
+    checksum: "sha256:\
+               https://github.com/etcd-io/etcd/releases/download/v{{ etcd_version }}/\
+               SHA256SUMS"
+    dest: /tmp
+    group: root
+    mode: 0644
+    owner: root
+    url: "https://github.com/etcd-io/etcd/releases/download/v{{ etcd_version }}/\
+          etcd-v{{ etcd_version }}-linux-{{ go_arch }}.tar.gz"
+
+- name: extract etcd archive
+  ansible.builtin.unarchive:
+    dest: /usr/local/bin
+    group: root
+    mode: 0755
+    owner: root
+    remote_src: yes
+    src: /tmp/etcd-v{{ etcd_version }}-linux-{{ go_arch }}.tar.gz
+    include:
+      - etcd-v{{ etcd_version }}-linux-{{ go_arch }}/etcd
+      - etcd-v{{ etcd_version }}-linux-{{ go_arch }}/etcdctl
+      - etcd-v{{ etcd_version }}-linux-{{ go_arch }}/etcdutl
+    extra_opts:
+      - --transform
+      - s/^etcd-v{{ etcd_version }}-linux-{{ go_arch }}//

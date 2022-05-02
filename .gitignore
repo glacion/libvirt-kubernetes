@@ -1,1 +1,5 @@
 .venv
+.terraform*
+*.tfstate.*
+*.tfstate
+pytestdebug.log

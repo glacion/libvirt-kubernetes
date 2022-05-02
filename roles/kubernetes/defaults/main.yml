@@ -1,6 +1,8 @@
 ---
-runc_version: 1.1.1
-cni_plugins_version: 1.1.1  
+cni_plugins_version: 1.1.1
+containerd_version: 1.6.3
 cri_tools_version: 1.23.0
-containerd_version: 1.6.2
+etcd_version: 3.5.4
+kubernetes_version: 1.23.6
 nerdctl_version: 0.19.0
+runc_version: 1.1.1
