@@ -1,0 +1,12 @@
+version = 2
+
+[plugins."io.containerd.grpc.v1.cri"]
+{% if ansible_selinux is defined and ansible_selinux != False and ansible_selinux.status == 'enabled' %}
+  enable_selinux = true
+{% endif %}
+  [plugins."io.containerd.grpc.v1.cri".containerd]
+    snapshotter = "overlayfs"
+    [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+      runtime_type = "io.containerd.runc.v2"
+      [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+        SystemdCgroup = true

@@ -1,0 +1,34 @@
+---
+rpm_install:
+  - bash-completion
+  - conntrack-tools
+  - container-selinux
+  - ethtool
+  - iproute-tc
+  - qemu-guest-agent
+  - socat
+
+rpm_remove:
+  - autoconf
+  - automake
+  - cmake
+  - cpp
+  - dracut-config-rescue
+  - dracut-network
+  - freetype
+  - gcc
+  - gettext
+  - kernel-devel
+  - man-db
+  - man-pages
+  - mlocate
+  - pinentry
+  - plymouth
+  - polkit
+  - slang
+  - sssd-client
+  - sssd-kcm
+  - sssd-nfs-idmap
+  - teamd
+  - telnet
+  - xkeyboard-config

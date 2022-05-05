@@ -8,15 +8,20 @@
     state: directory
 
 - name: push configuration
-  loop:
-    - etc/containerd/config.toml
-    - usr/local/lib/systemd/system/containerd.service
-  ansible.builtin.copy:
-    dest: /{{ item }}
+  ansible.builtin.template:
+    dest: /etc/containerd/config.toml
     group: root
     mode: 0644
     owner: root
-    src: "{{ item }}"
+    src: etc/containerd/config.toml
+
+- name: push service definition
+  ansible.builtin.copy:
+    dest: /usr/local/lib/systemd/system/containerd.service
+    group: root
+    mode: 0644
+    owner: root
+    src: usr/local/lib/systemd/system/containerd.service
 
 - name: download containerd archive
   ansible.builtin.get_url:

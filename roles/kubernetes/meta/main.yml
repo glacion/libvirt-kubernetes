@@ -9,5 +9,7 @@ galaxy_info:
     - name: Debian
       versions:
         - 11
-        - 10
-        - 9
+
+    - name: AlmaLinux
+      versions:
+        - 8

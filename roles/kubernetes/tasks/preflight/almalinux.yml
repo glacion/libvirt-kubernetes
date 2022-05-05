@@ -1,0 +1,45 @@
+---
+- name: remove rpm repositories
+  loop:
+    - /etc/yum.repos.d/almalinux-ha.repo
+    - /etc/yum.repos.d/almalinux-plus.repo
+    - /etc/yum.repos.d/almalinux-powertools.repo
+    - /etc/yum.repos.d/almalinux-resilientstorage.repo
+    - /etc/yum.repos.d/epel-modular.repo
+    - /etc/yum.repos.d/epel-playground.repo.rpmsave
+    - /etc/yum.repos.d/epel-testing-modular.repo
+    - /etc/yum.repos.d/epel-testing.repo
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+
+- name: install rpm repositories
+  loop:
+    - etc/yum.repos.d/almalinux.repo
+    - etc/yum.repos.d/epel.repo
+  ansible.builtin.copy:
+    dest: /{{ item }}
+    group: root
+    mode: 0644
+    owner: root
+    src: "{{ item }}"
+
+- name: clear packages
+  ansible.builtin.dnf:
+    pkg: "{{ rpm_remove }}"
+    state: absent
+
+- name: upgrade system
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+
+- name: install tools
+  ansible.builtin.dnf:
+    name: "{{ rpm_install }}"
+    state: present
+
+- name: enable QEMU guest agent
+  ansible.builtin.systemd:
+    enabled: true
+    name: qemu-guest-agent

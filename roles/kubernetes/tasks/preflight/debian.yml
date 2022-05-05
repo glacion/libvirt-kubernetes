@@ -1,12 +1,4 @@
 ---
-- name: create systemd directory
-  ansible.builtin.file:
-    group: root
-    mode: 0755
-    owner: root
-    path: /usr/local/lib/systemd/system
-    state: directory
-
 - name: remove unwanted configuration files
   loop:
     - /etc/apt/apt.conf.d/70debconf
@@ -30,24 +22,6 @@
     owner: root
     src: etc/apt/sources.list
 
-- name: push kernel module configuration
-  notify: reload modules
-  ansible.builtin.template:
-    dest: /etc/modules-load.d/kubernetes.conf
-    group: root
-    mode: 0644
-    owner: root
-    src: etc/modules-load.d/kubernetes.conf
-
-- name: push sysctl configuration
-  notify: reload sysctl
-  ansible.builtin.template:
-    dest: /etc/sysctl.d/99-kubernetes.conf
-    group: root
-    mode: 0644
-    owner: root
-    src: etc/sysctl.d/99-kubernetes.conf
-
 - name: clear packages
   ansible.builtin.apt:
     pkg: "{{ apt_remove }}"
@@ -63,12 +37,7 @@
 
 - name: install tools
   ansible.builtin.apt:
-    pkg:
-      - conntrack
-      - ethtool
-      - qemu-guest-agent
-      - socat
-      - bash-completion
+    pkg: "{{ apt_install }}"
     state: present
 
 - name: enable QEMU guest agent

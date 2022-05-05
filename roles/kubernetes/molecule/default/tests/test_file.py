@@ -1,5 +1,5 @@
 from typing import Set
-
+from pathlib import Path
 import pytest
 from testinfra.modules.file import File
 
@@ -46,3 +46,13 @@ def test_executables(host, executable):
     assert it.user == "root"
     assert it.group == "root"
     assert it.mode == 0o755
+
+
+@pytest.mark.parametrize("executable", executables)
+def test_path(host, executable):
+    path: Path = Path(executable)
+    if path.is_relative_to("/opt/cni/bin"):
+        pytest.skip(reason="CNI plugins are not needed in $PATH")
+
+    with host.sudo():
+        assert host.exists(path.name)

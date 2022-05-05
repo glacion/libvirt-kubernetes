@@ -1,0 +1,48 @@
+---
+- name: create systemd directories
+  loop:
+    - /usr/local/lib/environment.d
+    - /usr/local/lib/systemd/system
+  ansible.builtin.file:
+    group: root
+    mode: 0755
+    owner: root
+    path: "{{ item }}"
+    state: directory
+
+- name: push environment configuration
+  ansible.builtin.copy:
+    dest: /usr/local/lib/environment.d/99-localpath.conf
+    group: root
+    mode: 0644
+    owner: root
+    src: usr/local/lib/environment.d/99-localpath.conf
+
+- name: push sudo configuration
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/localpath
+    group: root
+    mode: 0440
+    owner: root
+    src: etc/sudoers.d/localpath
+
+- name: push kernel module configuration
+  notify: reload modules
+  ansible.builtin.template:
+    dest: /etc/modules-load.d/kubernetes.conf
+    group: root
+    mode: 0644
+    owner: root
+    src: etc/modules-load.d/kubernetes.conf
+
+- name: push sysctl configuration
+  notify: reload sysctl
+  ansible.builtin.template:
+    dest: /etc/sysctl.d/99-kubernetes.conf
+    group: root
+    mode: 0644
+    owner: root
+    src: etc/sysctl.d/99-kubernetes.conf
+
+- name: run os specific tasks
+  ansible.builtin.include_tasks: preflight/{{ ansible_distribution | lower }}.yml
