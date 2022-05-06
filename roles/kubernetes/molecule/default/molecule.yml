@@ -7,7 +7,7 @@ driver:
 
 platforms:
   - name: debian11
-    box: generic/debian11
+    box: debian/bullseye64
     cpus: 2
     memory: 2048
     provider_raw_config_args:
@@ -18,7 +18,7 @@ platforms:
       synced_folder: false
 
   - name: alma8
-    box: generic/alma8
+    box: almalinux/8
     cpus: 2
     memory: 2048
     provider_raw_config_args:
