@@ -1,15 +1,10 @@
-locals {
-  build_root = "../build/bullseye"
-  build_path = "${local.build_root}/${local.date}"
-  date       = timestamp()
-}
-
 packer {
   required_plugins {
     qemu = {
       version = ">= 1.0.3"
       source  = "github.com/hashicorp/qemu"
     }
+
     sshkey = {
       version = ">= 1.0.1"
       source  = "github.com/ivoronin/sshkey"
@@ -19,21 +14,23 @@ packer {
 
 data "sshkey" "key" {}
 
-source "qemu" "debian" {
+source "qemu" "almalinux" {
   disk_image   = true
-  disk_size    = "4G"
   format       = "qcow2"
-  iso_checksum = "file:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS"
-  iso_url      = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2"
+  iso_url      = var.iso_url
+  iso_checksum = var.iso_checksum
 
   accelerator = "kvm"
+  cpus        = 2
+  firmware    = var.ovmf_path
   headless    = true
+  memory      = 2048
 
   output_directory = local.build_path
-  vm_name          = "debian.qcow2"
+  vm_name          = "${var.distribution}.qcow2"
 
   ssh_private_key_file = data.sshkey.key.private_key_path
-  ssh_username         = "debian"
+  ssh_username         = var.username
 
   cd_label = "cidata"
   cd_content = {
@@ -49,19 +46,14 @@ source "qemu" "debian" {
 
 build {
   sources = [
-    "source.qemu.debian"
+    "source.qemu.almalinux"
   ]
 
   provisioner "ansible" {
     command       = "../.venv/bin/ansible-playbook"
     playbook_file = "site.yml"
     use_proxy     = false
-    user          = "debian"
-  }
-
-  post-processor "manifest" {
-    output     = "${local.build_path}/manifest.json"
-    strip_path = true
+    user          = var.username
   }
 
   post-processor "shell-local" {

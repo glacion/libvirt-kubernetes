@@ -1,5 +1,4 @@
 ---
-
 - name: prepare golden image
   hosts: default
   become: yes
