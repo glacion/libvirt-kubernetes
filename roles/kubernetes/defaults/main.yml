@@ -1,8 +1,19 @@
 ---
+install_cni_plugins: true
 cni_plugins_version: 1.1.1
+
+install_containerd: true
 containerd_version: 1.6.3
-cri_tools_version: 1.23.0
-etcd_version: 3.5.4
-kubernetes_version: 1.23.6
 nerdctl_version: 0.19.0
+
+install_cri_tools: true
+cri_tools_version: 1.23.0
+
+install_etcd: true
+etcd_version: 3.5.4
+
+install_kubernetes: true
+kubernetes_version: 1.24.0
+
+install_runc: true
 runc_version: 1.1.1

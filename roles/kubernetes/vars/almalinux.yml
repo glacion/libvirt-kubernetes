@@ -3,14 +3,19 @@ rpm_install:
   - bash-completion
   - conntrack-tools
   - container-selinux
+  - epel-release
   - ethtool
   - iproute-tc
+  - iptables-ebtables
   - qemu-guest-agent
   - socat
 
 rpm_remove:
   - dracut-config-rescue
   - dracut-network
+  - geolite2-city
+  - geolite2-country
+  - linux-firmware
   - man-db
   - mlocate
   - pinentry

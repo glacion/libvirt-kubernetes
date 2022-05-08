@@ -9,10 +9,10 @@
     path: "{{ item }}"
     state: absent
 
-- name: install rpm repositories
+- name: push dnf configuration and repositories
   loop:
+    - etc/dnf/dnf.conf
     - etc/yum.repos.d/almalinux.repo
-    - etc/yum.repos.d/epel.repo
   ansible.builtin.copy:
     dest: /{{ item }}
     group: root

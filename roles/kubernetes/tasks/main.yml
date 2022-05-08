@@ -9,19 +9,25 @@
   ansible.builtin.include_tasks: install/bash_completion.yml
 
 - name: install CNI plugins
+  when: install_cni_plugins
   ansible.builtin.include_tasks: install/cni_plugins.yml
 
 - name: install containerd
+  when: install_containerd
   ansible.builtin.include_tasks: install/containerd.yml
 
-- name: install critools
-  ansible.builtin.include_tasks: install/critools.yml
+- name: install cri_tools
+  when: install_cri_tools
+  ansible.builtin.include_tasks: install/cri_tools.yml
 
 - name: install etcd
+  when: install_etcd
   ansible.builtin.include_tasks: install/etcd.yml
 
 - name: install runc
+  when: install_runc
   ansible.builtin.include_tasks: install/runc.yml
 
 - name: install kubernetes
+  when: install_kubernetes
   ansible.builtin.include_tasks: install/kubernetes.yml
