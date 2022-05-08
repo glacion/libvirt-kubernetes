@@ -16,13 +16,6 @@ variable "memory" {
   default = 2048
 }
 
-variable "ovmf_path" {
-  // host dependent path for UEFI firmware
-  // default value is for Arch Linux
-  type    = string
-  default = "/usr/share/edk2-ovmf/x64/OVMF.fd"
-}
-
 variable "distribution" {
   // name of the distribution
   type = string

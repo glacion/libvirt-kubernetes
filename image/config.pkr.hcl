@@ -14,7 +14,7 @@ packer {
 
 data "sshkey" "key" {}
 
-source "qemu" "almalinux" {
+source "qemu" "image" {
   disk_image   = true
   format       = "qcow2"
   iso_url      = var.iso_url
@@ -22,13 +22,13 @@ source "qemu" "almalinux" {
 
   accelerator = "kvm"
   cpus        = 2
-  firmware    = var.ovmf_path
   headless    = true
   memory      = 2048
 
   output_directory = local.build_path
   vm_name          = "${var.distribution}.qcow2"
 
+  shutdown_command     = "sudo systemctl poweroff"
   ssh_private_key_file = data.sshkey.key.private_key_path
   ssh_username         = var.username
 
@@ -46,7 +46,7 @@ source "qemu" "almalinux" {
 
 build {
   sources = [
-    "source.qemu.almalinux"
+    "source.qemu.image"
   ]
 
   provisioner "ansible" {

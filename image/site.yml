@@ -1,6 +1,15 @@
 ---
-- name: prepare golden image
+- name: prepare image
+  any_errors_fatal: yes
   hosts: default
   become: yes
   roles:
     - ../roles/kubernetes
+
+- name: clean up
+  any_errors_fatal: yes
+  hosts: default
+  become: yes
+  tasks:
+    - name: clear cloud-init
+      ansible.builtin.command: /bin/cloud-init clean
