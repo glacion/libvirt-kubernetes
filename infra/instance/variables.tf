@@ -28,6 +28,12 @@ variable "domain" {
   nullable    = false
 }
 
+variable "labels" {
+  type        = map(string)
+  description = "misc. key-value labels"
+  default     = {}
+}
+
 variable "memory" {
   type        = number
   description = "memory in MB"
