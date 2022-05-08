@@ -1,0 +1,14 @@
+[all]
+%{ for instance in instances ~}
+${instance.fqdn}
+%{ endfor ~}
+
+%{ for group in groups ~}
+[${group}]
+	%{~ for instance in instances ~}
+		%{~ if instance.labels.group == group ~}
+			${~instance.fqdn}
+		%{~ endif ~}
+	%{~ endfor ~}
+
+%{ endfor ~}
