@@ -1,4 +1,0 @@
-#cloud-config
-  
-ssh_authorized_keys:
-  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHbXlfKMbig2wGyuA9tPd1Skjh89tVZ8M98AgWwpNgaM glacion@glacion.com
