@@ -10,4 +10,3 @@ resource "libvirt_cloudinit_disk" "init" {
     ssh_keys = var.ssh_keys
   })
 }
-
