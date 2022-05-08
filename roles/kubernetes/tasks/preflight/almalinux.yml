@@ -30,6 +30,7 @@
   ansible.builtin.dnf:
     name: "*"
     state: latest
+    update_only: true
 
 - name: install tools
   ansible.builtin.dnf:
