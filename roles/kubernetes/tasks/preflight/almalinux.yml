@@ -20,6 +20,11 @@
     owner: root
     src: "{{ item }}"
 
+- name: install epel repository
+  ansible.builtin.dnf:
+    name: epel-release
+    state: present
+
 - name: install tools
   ansible.builtin.dnf:
     name: "{{ rpm_install }}"
