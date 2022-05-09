@@ -20,6 +20,11 @@
     owner: root
     src: "{{ item }}"
 
+- name: install tools
+  ansible.builtin.dnf:
+    name: "{{ rpm_install }}"
+    state: present
+
 - name: clear packages
   ansible.builtin.dnf:
     pkg: "{{ rpm_remove }}"
@@ -31,11 +36,6 @@
     name: "*"
     state: latest
     update_only: true
-
-- name: install tools
-  ansible.builtin.dnf:
-    name: "{{ rpm_install }}"
-    state: present
 
 - name: enable QEMU guest agent
   ansible.builtin.systemd:

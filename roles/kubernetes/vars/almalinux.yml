@@ -15,7 +15,7 @@ rpm_remove:
   - dracut-network
   - geolite2-city
   - geolite2-country
-  - linux-firmware
+  - firewalld
   - man-db
   - mlocate
   - pinentry
@@ -27,4 +27,4 @@ rpm_remove:
   - sssd-kcm
   - sssd-nfs-idmap
   - teamd
-  - xkeyboard-config
+  # - xkeyboard-config
