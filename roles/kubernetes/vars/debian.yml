@@ -1,6 +1,7 @@
 ---
 apt_install:
   - bash-completion
+  - cloud-init 
   - conntrack
   - ethtool
   - qemu-guest-agent
