@@ -4,4 +4,5 @@
 .venv
 .vscode
 build/
+inventory.cfg
 pytestdebug.log
