@@ -5,3 +5,6 @@ test:
 
 ci:
 	../../.venv/bin/molecule test
+
+destroy:
+	../../.venv/bin/molecule destroy

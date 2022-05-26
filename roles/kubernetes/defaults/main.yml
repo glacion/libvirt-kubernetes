@@ -1,4 +1,6 @@
 ---
+cni_cidr: 10.69.0.0/16
+
 install_cni_plugins: true
 cni_plugins_version: 1.1.1
 

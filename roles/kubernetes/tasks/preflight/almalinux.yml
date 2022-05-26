@@ -1,24 +1,11 @@
 ---
-- name: remove rpm repositories
-  loop:
-    - /etc/yum.repos.d/almalinux-ha.repo
-    - /etc/yum.repos.d/almalinux-plus.repo
-    - /etc/yum.repos.d/almalinux-powertools.repo
-    - /etc/yum.repos.d/almalinux-resilientstorage.repo
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: absent
-
-- name: push dnf configuration and repositories
-  loop:
-    - etc/dnf/dnf.conf
-    - etc/yum.repos.d/almalinux.repo
+- name: push dnf configuration 
   ansible.builtin.copy:
-    dest: /{{ item }}
+    dest: /etc/dnf/dnf.conf
     group: root
     mode: 0644
     owner: root
-    src: "{{ item }}"
+    src: etc/dnf/dnf.conf
 
 - name: install epel repository
   ansible.builtin.dnf:
