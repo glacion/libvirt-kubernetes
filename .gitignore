@@ -1,6 +1,7 @@
-.venv
-.terraform*
-*.tfstate.*
 *.tfstate
-pytestdebug.log
+*.tfstate.*
+.terraform*
+.venv
+.vscode
 build/
+pytestdebug.log
