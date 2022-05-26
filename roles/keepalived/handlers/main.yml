@@ -1,0 +1,6 @@
+---
+- name: Reload keepalived configuration
+  service:
+    name: keepalived
+    state: reloaded
+  listen: reload keepalived

@@ -1,0 +1,24 @@
+---
+keepalived_template: keepalived.conf.j2
+
+vrrp_name: KUBERNETES_API_SERVER
+virtual_interface: eth0
+
+virtual_router_id: 1
+
+virtual_ip: 10.16.16.2
+
+virtual_port: 80
+
+health_check: |-
+  HTTP_GET {
+    url {
+      path /
+      status_code 200
+    }
+  }
+
+servers:
+  - 10.16.16.11
+  - 10.16.16.12
+  - 10.16.16.13

@@ -1,0 +1,21 @@
+---
+- name: Install keepalived
+  apt:
+    name: keepalived
+
+- name: Start keepalived service
+  service:
+    name: keepalived
+    state: started
+    enabled: yes
+
+- name: Push keepalived.conf
+  notify: reload keepalived
+  template:
+    src: keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+    validate: /usr/sbin/keepalived --config-test --use-file %s

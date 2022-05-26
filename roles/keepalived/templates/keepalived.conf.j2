@@ -1,0 +1,17 @@
+vrrp_instance {{ vrrp_name }} {
+    interface {{ virtual_interface }}
+    virtual_router_id {{ virtual_router_id }}
+    virtual_ipaddress {
+        {{ virtual_ip }}
+    }
+}
+
+virtual_server {{ virtual_ip }} {{ virtual_port }} {
+    lvs_sched rr
+    inhibit_on_failure
+{% for server in servers %}
+    real_server {{ server }} {{ virtual_port }} {
+{{ health_check | indent(8, first=True) }}
+    } 
+{% endfor %}
+}
