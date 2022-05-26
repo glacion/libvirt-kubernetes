@@ -14,7 +14,6 @@ apt_remove:
   - doc-debian
   - gettext-base
   - krb5-locales
-  - locales
   - mailcap
   - man-db
   - manpages
