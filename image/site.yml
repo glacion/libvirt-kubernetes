@@ -5,11 +5,12 @@
   become: yes
   roles:
     - ../roles/kubernetes
-
+ 
+# TODO: Clean _everything_
 - name: clean up
   any_errors_fatal: yes
   hosts: default
   become: yes
   tasks:
     - name: clear cloud-init
-      ansible.builtin.command: /bin/cloud-init clean
+      ansible.builtin.command: cloud-init clean
