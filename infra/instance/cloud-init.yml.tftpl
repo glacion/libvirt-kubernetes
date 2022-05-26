@@ -1,6 +1,13 @@
 #cloud-config
 
-ssh_authorized_keys:
-%{ for ssh_key in ssh_keys ~}
-  - ${ssh_key}
-%{ endfor ~}
+users:
+  - name: ${ ssh_username }
+    lock_passwd: true
+    gecos: Cloud User
+    groups: [adm, systemd-journal]
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    shell: /bin/bash
+    ssh_authorized_keys:
+    %{ for ssh_key in ssh_keys ~}
+      - ${ ssh_key }
+    %{ endfor ~}

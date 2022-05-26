@@ -64,3 +64,8 @@ variable "ssh_keys" {
   type        = list(string)
   description = "ssh public keys"
 }
+
+variable "ssh_username" {
+  type        = string
+  description = "ssh username"
+}

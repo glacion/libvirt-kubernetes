@@ -1,7 +1,8 @@
-base_volume = "../build/almalinux/latest/almalinux.qcow2"
+base_volume = "../build/debian/latest/debian.qcow2"
 domain      = "kubernetes.glacion.com"
 libvirt_uri = "qemu:///system"
 pool        = "default"
+ssh_username = "glacion"
 
 addresses = [
   "10.17.3.0/24"
