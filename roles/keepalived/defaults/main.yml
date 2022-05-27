@@ -1,24 +1,19 @@
 ---
-keepalived_template: keepalived.conf.j2
-
 vrrp_name: KUBERNETES_API_SERVER
-virtual_interface: eth0
+network_interface: "{{ ansible_facts.default_ipv4.interface }}"
 
 virtual_router_id: 1
-
-virtual_ip: 10.16.16.2
-
+virtual_ip: 192.168.121.200
 virtual_port: 80
 
 health_check: |-
-  HTTP_GET {
-    url {
-      path /
-      status_code 200
-    }
+  TCP_CHECK {
+      connect_port {{ virtual_port }}
+      connect_timeout 5
   }
 
-servers:
-  - 10.16.16.11
-  - 10.16.16.12
-  - 10.16.16.13
+servers: |-
+  {{ 
+    groups['all'] | 
+    map('extract', hostvars, ['ansible_default_ipv4', 'address']) 
+  }}

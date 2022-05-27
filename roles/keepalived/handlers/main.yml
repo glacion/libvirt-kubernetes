@@ -1,6 +1,6 @@
 ---
-- name: Reload keepalived configuration
-  service:
+- name: reload keepalived configuration
+  listen: reload keepalived
+  ansible.builtin.systemd:
     name: keepalived
     state: reloaded
-  listen: reload keepalived

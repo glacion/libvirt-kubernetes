@@ -1,0 +1,7 @@
+---
+- name: Converge
+  any_errors_fatal: true
+  become: yes
+  hosts: all
+  roles:
+    - glacion.keepalived

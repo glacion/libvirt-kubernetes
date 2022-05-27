@@ -1,0 +1,4 @@
+---
+- name: install keepalived
+  ansible.builtin.yum:
+    name: keepalived
