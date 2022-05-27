@@ -1,4 +1,0 @@
----
-mock_modules:
-  - community.general.modprobe
-  - ansible.posix.sysctl
