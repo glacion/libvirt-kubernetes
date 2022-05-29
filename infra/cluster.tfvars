@@ -10,6 +10,7 @@ addresses = [
 
 instances = {
   controller01 = {
+    address   = "10.17.3.11"
     cpu       = 2,
     disk_size = 64
     memory    = 2048
@@ -18,6 +19,7 @@ instances = {
     }
   }
   controller02 = {
+    address   = "10.17.3.12"
     cpu       = 2,
     disk_size = 64
     memory    = 2048
@@ -26,6 +28,7 @@ instances = {
     }
   }
   controller03 = {
+    address   = "10.17.3.13"
     cpu       = 2,
     disk_size = 64
     memory    = 2048
@@ -34,6 +37,7 @@ instances = {
     }
   }
   worker01 = {
+    address   = "10.17.3.21"
     cpu       = 4,
     disk_size = 64
     memory    = 4096
@@ -42,6 +46,7 @@ instances = {
     }
   }
   worker02 = {
+    address   = "10.17.3.22"
     cpu       = 4,
     disk_size = 64
     memory    = 4096
@@ -50,6 +55,7 @@ instances = {
     }
   }
   worker03 = {
+    address   = "10.17.3.23"
     cpu       = 4,
     disk_size = 64
     memory    = 4096

@@ -18,6 +18,7 @@ variable "domain" {
 
 variable "instances" {
   type = map(object({
+    address   = string
     cpu       = number
     disk_size = number # in GiB
     memory    = number # in MB

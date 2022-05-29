@@ -2,6 +2,12 @@ locals {
   fqdn = "${var.name}.${var.domain}"
 }
 
+variable "address" {
+  type        = string
+  description = "static ip address for instance"
+  nullable    = false
+}
+
 variable "base_volume" {
   type = object({
     id = string

@@ -17,6 +17,9 @@ resource "libvirt_domain" "domain" {
     hostname       = local.fqdn
     network_id     = var.network.id
     wait_for_lease = true
+    addresses = [
+      var.address
+    ]
   }
 
   console {

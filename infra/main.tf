@@ -8,6 +8,7 @@ module "instance" {
 
   name = each.key
 
+  address   = each.value.address
   cpu       = each.value.cpu
   disk_size = each.value.disk_size * pow(1024, 3)
   labels    = each.value.labels
