@@ -5,6 +5,7 @@ network_interface: "{{ ansible_facts.default_ipv4.interface }}"
 virtual_router_id: 1
 virtual_ip: 192.168.121.200
 virtual_port: 80
+real_port: 80
 
 health_check: |-
   TCP_CHECK {

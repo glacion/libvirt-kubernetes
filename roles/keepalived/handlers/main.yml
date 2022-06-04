@@ -1,4 +1,9 @@
 ---
+- name: reload modules
+  ansible.builtin.systemd:
+    name: systemd-modules-load
+    state: restarted
+
 - name: reload keepalived configuration
   listen: reload keepalived
   ansible.builtin.systemd:

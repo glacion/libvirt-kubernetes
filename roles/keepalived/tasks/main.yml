@@ -1,4 +1,16 @@
 ---
+- name: create dummy interface
+  changed_when: ip_link.rc == 0
+  failed_when: '"Error:" in ip_link.stderr'
+  register: ip_link
+  ansible.builtin.command: ip link add dummy0 type dummy
+    
+- name: configure dummy interface
+  changed_when: ip_link.rc == 0
+  failed_when: '"Error:" in ip_link.stderr'
+  register: ip_addr
+  ansible.builtin.command: ip addr add {{ virtual_ip }} dev dummy0
+
 - name: install keepalived
   ansible.builtin.include_tasks: install/{{ ansible_distribution | lower }}.yml
 
@@ -17,4 +29,4 @@
   ansible.builtin.systemd:
     enabled: yes
     name: keepalived
-    state: started
+    state: restarted

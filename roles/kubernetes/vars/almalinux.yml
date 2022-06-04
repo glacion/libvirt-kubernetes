@@ -3,9 +3,9 @@ rpm_install:
   - bash-completion
   - conntrack-tools
   - container-selinux
-  - ethtool #!
+  - ethtool 
   - iproute-tc
-  - iptables-ebtables #!
+  # - iptables-nft
   - qemu-guest-agent
   - socat
 
