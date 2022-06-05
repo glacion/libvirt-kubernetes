@@ -1,10 +1,15 @@
 ---
-- name: create service directory
+- name: create directories
+  loop:
+    - /etc/kubeadm
+    - /etc/kubernetes/manifests
+    - /etc/kubernetes/pki
+    - /usr/local/lib/systemd/system/kubelet.service.d
   ansible.builtin.file:
     group: root
     mode: 0755
     owner: root
-    path: /usr/local/lib/systemd/system/kubelet.service.d
+    path: "{{ item }}"
     state: directory
 
 - name: push systemd service configuration
