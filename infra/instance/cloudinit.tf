@@ -9,5 +9,6 @@ resource "libvirt_cloudinit_disk" "init" {
   user_data = templatefile("${path.module}/cloud-init.yml.tftpl", {
     ssh_keys     = var.ssh_keys
     ssh_username = var.ssh_username
+    hostname     = local.fqdn
   })
 }

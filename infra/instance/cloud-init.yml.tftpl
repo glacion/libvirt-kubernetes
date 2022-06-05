@@ -1,5 +1,9 @@
 #cloud-config
 
+prefer_fqdn_over_hostname: true
+fqdn: ${ hostname }
+hostname: ${ hostname }
+
 users:
   - name: ${ ssh_username }
     lock_passwd: true
