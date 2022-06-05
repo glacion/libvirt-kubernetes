@@ -5,7 +5,7 @@ rpm_install:
   - container-selinux
   - ethtool 
   - iproute-tc
-  # - iptables-nft
+  - ipvsadm
   - qemu-guest-agent
   - socat
 

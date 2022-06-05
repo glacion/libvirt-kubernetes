@@ -4,6 +4,7 @@ apt_install:
   - cloud-init 
   - conntrack
   - ethtool
+  - ipvsadm
   - qemu-guest-agent
   - socat
 
