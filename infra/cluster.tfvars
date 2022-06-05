@@ -1,8 +1,10 @@
-base_volume = "../build/debian/latest/debian.qcow2"
-domain      = "kubernetes.glacion.com"
-libvirt_uri = "qemu:///system"
-pool        = "default"
-ssh_username = "glacion"
+base_volume    = "../build/debian/latest/debian.qcow2"
+controller_vip = "10.17.3.10"
+domain         = "kubernetes.glacion.com"
+libvirt_uri    = "qemu:///system"
+pool           = "default"
+ssh_username   = "glacion"
+worker_vip     = "10.17.3.20"
 
 addresses = [
   "10.17.3.0/24"

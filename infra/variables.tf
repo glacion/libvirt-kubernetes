@@ -10,6 +10,12 @@ variable "base_volume" {
   nullable    = false
 }
 
+variable "controller_vip" {
+  type        = string
+  description = "virtual ip of control plane"
+  nullable    = false
+}
+
 variable "domain" {
   type        = string
   description = "cluster domain"
@@ -47,4 +53,10 @@ variable "ssh_keys" {
 variable "ssh_username" {
   type        = string
   description = "ssh username"
+}
+
+variable "worker_vip" {
+  type        = string
+  description = "virtual ip of worker plane"
+  nullable    = false
 }
