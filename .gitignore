@@ -5,3 +5,4 @@
 .vscode
 build/
 pytestdebug.log
+inventory/inventory.cfg
