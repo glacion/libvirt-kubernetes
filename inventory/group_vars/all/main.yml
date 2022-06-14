@@ -1,0 +1,6 @@
+cluster_name: kubernetes.glacion.com
+control_plane_endpoint: controller.kubernetes.glacion.com
+kube_vip_image: ghcr.io/kube-vip/kube-vip:v0.4.4
+kubernetes_version: 1.24.0
+pod_cidr: 10.244.0.0/12
+service_cidr: 10.96.0.0/12
