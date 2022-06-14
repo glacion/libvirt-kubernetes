@@ -10,6 +10,18 @@ variable "cpus" {
   default = 2
 }
 
+variable "disk_compression" {
+  // Image virtual disk size
+  type    = bool
+  default = true
+}
+
+variable "disk_size" {
+  // Image virtual disk size
+  type    = string
+  default = "8G"
+}
+
 variable "memory" {
   // MB of memory to assign to the VM
   type    = number

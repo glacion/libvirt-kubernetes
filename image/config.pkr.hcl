@@ -16,9 +16,11 @@ data "sshkey" "key" {}
 
 source "qemu" "image" {
   disk_image   = true
+	disk_size    = var.disk_size
   format       = "qcow2"
   iso_url      = var.iso_url
   iso_checksum = var.iso_checksum
+	disk_compression = var.disk_compression
 
   accelerator = "kvm"
   cpus        = 2
@@ -51,6 +53,7 @@ build {
 
   provisioner "ansible" {
     command       = "../.venv/bin/ansible-playbook"
+	inventory_directory = "../inventory/"
     playbook_file = "site.yml"
     use_proxy     = false
     user          = var.username
@@ -58,7 +61,7 @@ build {
 
   post-processor "shell-local" {
     inline = [
-      "rm -v \"$(realpath -s ${local.build_root}/latest)\" || true",
+      "unlink \"$(realpath -s ${local.build_root}/latest)\" || true",
       "ln -sv \"$(realpath -s ${local.build_path})\" \"$(realpath -s ${local.build_root})/latest\"",
     ]
   }
