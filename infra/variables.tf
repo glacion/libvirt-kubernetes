@@ -54,9 +54,3 @@ variable "ssh_username" {
   type        = string
   description = "ssh username"
 }
-
-variable "worker_vip" {
-  type        = string
-  description = "virtual ip of worker plane"
-  nullable    = false
-}
