@@ -1,0 +1,16 @@
+---
+- name: reset cluster
+  become: yes
+  hosts: all 
+  tasks:
+    - name: kubeadm reset
+      changed_when: false
+      failed_when: false
+      ansible.builtin.command: |-
+        kubeadm reset --force
+
+    - name: clear ipvs
+      changed_when: false
+      failed_when: false
+      ansible.builtin.command: |-
+        ipvs --clear

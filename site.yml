@@ -1,0 +1,117 @@
+---
+- name: bootstrap
+  become: yes
+  run_once: true
+  hosts: controller
+  tasks:
+    - name: install kubeadm configuration
+      ansible.builtin.template:
+        src: etc/kubeadm/config.yaml
+        dest: /etc/kubeadm/config.yaml
+
+    - name: install kube-vip configuration
+      ansible.builtin.template:
+        src: etc/kubernetes/manifests/kube-vip.yaml
+        dest: /etc/kubernetes/manifests/kube-vip.yaml
+
+    - name: create certificate key
+      register: certificate_key
+      changed_when: false
+      ansible.builtin.command: |-
+        kubeadm certs certificate-key
+
+    - name: initialize cluster
+      register: init
+      changed_when: init.rc == 0
+      failed_when: init.rc != 0 and "[preflight] Running pre-flight checks" not in init.stdout
+      ansible.builtin.command: |-
+        kubeadm init
+        --config=/etc/kubeadm/config.yaml
+
+    - name: retrieve CA cert hash
+      changed_when: false
+      register: ca_cert_hash
+      ansible.builtin.shell: |-
+        openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt |
+        openssl rsa -pubin -outform der 2>/dev/null |
+        openssl dgst -sha256 -hex |
+        sed 's/^.* //'
+
+    - name: upload kubernetes certs
+      changed_when: false
+      ansible.builtin.command: |-
+        kubeadm init phase upload-certs --upload-certs
+        --certificate-key={{ certificate_key.stdout }}
+
+    - name: create join token
+      register: join_token
+      changed_when: false
+      ansible.builtin.command: |-
+        kubeadm token create
+
+- name: control plane
+  become: yes
+  hosts: controller
+  tasks:
+    - name: join node to control plane
+      register: join
+      when: ansible_host != groups['controller'][0]
+      changed_when: join.rc == 0
+      failed_when: join.rc != 0 and "[preflight] Running pre-flight checks" not in join.stdout
+      ansible.builtin.command: |-
+        kubeadm join
+        {{ control_plane_endpoint }}:6443
+        --control-plane
+        --token={{ join_token.stdout }}
+        --discovery-token-ca-cert-hash=sha256:{{ ca_cert_hash.stdout }}
+        --certificate-key={{ certificate_key.stdout }}
+
+    - name: install kube-vip configuration
+      ansible.builtin.template:
+        src: etc/kubernetes/manifests/kube-vip.yaml
+        dest: /etc/kubernetes/manifests/kube-vip.yaml
+
+    - name: create kubeconfig path
+      ansible.builtin.file:
+        group: root
+        mode: 0700
+        owner: root
+        path: /root/.kube
+        state: directory
+
+    - name: link admin credentials for root user
+      ansible.builtin.file:
+        dest: /root/.kube/config
+        group: root
+        mode: 0600
+        owner: root
+        src: /etc/kubernetes/admin.conf
+        state: link
+
+- name: worker plane
+  become: yes
+  hosts: worker
+  tasks:
+    - name: join node to worker plane
+      register: join_worker
+      changed_when: join_worker.rc == 0
+      failed_when: join_worker.rc != 0 and "[preflight] Running pre-flight checks" not in join_worker.stdout
+      ansible.builtin.command: |-
+        kubeadm join
+        {{ control_plane_endpoint }}:6443
+        --token={{ hostvars[groups['controller'][0]].join_token.stdout }}
+        --discovery-token-ca-cert-hash=sha256:{{ hostvars[groups['controller'][0]].ca_cert_hash.stdout }}
+
+- name: label worker nodes
+  become: yes
+  run_once: true
+  hosts: controller
+  tasks:
+    - name: add worker node role
+      register: role_worker
+      loop: "{{ groups['worker'] }}"
+      changed_when: role_worker.rc == 0
+      failed_when: role_worker.rc !=0 and "already has a value" not in role_worker.stderr
+      ansible.builtin.command: |-
+        kubectl label nodes {{ item }} node-role.kubernetes.io/worker=worker
+
