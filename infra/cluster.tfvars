@@ -1,17 +1,17 @@
 base_volume    = "../build/debian/latest/debian.qcow2"
-controller_vip = "192.168.47.10"
+controller_vip = "192.168.8.10"
 domain         = "kubernetes.glacion.com"
 libvirt_uri    = "qemu:///system"
 pool           = "default"
 ssh_username   = "glacion"
 
 addresses = [
-  "192.168.47.0/24"
+  "192.168.8.0/24"
 ]
 
 instances = {
   controller01 = {
-    address   = "192.168.47.11"
+    address   = "192.168.8.11"
     cpu       = 2,
     disk_size = 64
     memory    = 2048
@@ -20,7 +20,7 @@ instances = {
     }
   }
   controller02 = {
-    address   = "192.168.47.12"
+    address   = "192.168.8.12"
     cpu       = 2,
     disk_size = 64
     memory    = 2048
@@ -29,7 +29,7 @@ instances = {
     }
   }
   controller03 = {
-    address   = "192.168.47.13"
+    address   = "192.168.8.13"
     cpu       = 2,
     disk_size = 64
     memory    = 2048
@@ -38,7 +38,7 @@ instances = {
     }
   }
   worker01 = {
-    address   = "192.168.47.21"
+    address   = "192.168.8.21"
     cpu       = 4,
     disk_size = 64
     memory    = 4096
@@ -47,7 +47,7 @@ instances = {
     }
   }
   worker02 = {
-    address   = "192.168.47.22"
+    address   = "192.168.8.22"
     cpu       = 4,
     disk_size = 64
     memory    = 4096
@@ -56,7 +56,7 @@ instances = {
     }
   }
   worker03 = {
-    address   = "192.168.47.23"
+    address   = "192.168.8.23"
     cpu       = 4,
     disk_size = 64
     memory    = 4096
