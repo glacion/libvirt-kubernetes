@@ -7,10 +7,5 @@ resource "libvirt_network" "network" {
 
   dns {
     enabled = true
-
-    hosts {
-      hostname = "controller.${var.domain}"
-      ip       = var.controller_vip
-    }
   }
 }
