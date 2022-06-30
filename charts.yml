@@ -1,0 +1,57 @@
+---
+- name: prepare
+  hosts: localhost
+  connection: local
+  environment:
+    KUBECONFIG: build/{{ cluster_name }}.yml
+  tasks:
+    - name: install helm diff
+      kubernetes.core.helm_plugin:
+        plugin_path: https://github.com/databus23/helm-diff
+        state: present
+
+- name: install calico
+  hosts: localhost
+  connection: local
+  environment:
+    KUBECONFIG: build/{{ cluster_name }}.yml
+  tasks:
+    - name: create tigera-operator namespace
+      kubernetes.core.k8s:
+        state: present
+        kind: Namespace
+        name: tigera-operator
+
+    - name: create service configmap
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: kubernetes-services-endpoint
+            namespace: tigera-operator
+          data:
+            KUBERNETES_SERVICE_HOST: "{{ control_plane_endpoint }}"
+            KUBERNETES_SERVICE_PORT: "6443"
+
+    - name: install chart repository
+      kubernetes.core.helm_repository:
+        name: projectcalico
+        repo_url: https://projectcalico.docs.tigera.io/charts
+
+    - name: install calico helm chart
+      kubernetes.core.helm:
+        chart_ref: projectcalico/tigera-operator
+        chart_version: v3.23.2
+        name: calico
+        release_namespace: tigera-operator
+        values:
+          apiServer:
+            enabled: true
+          installation:
+            nodeMetricsPort: 9092
+            typhaMetricsPort: 9093
+            calicoNetwork:
+              ipPools:
+                - cidr: "{{ pod_cidr }}"
