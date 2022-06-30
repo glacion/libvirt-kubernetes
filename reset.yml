@@ -1,16 +1,23 @@
 ---
 - name: reset cluster
   become: yes
-  hosts: all 
+  hosts: all
   tasks:
     - name: kubeadm reset
+      async: 600
       changed_when: false
       failed_when: false
+      poll: 0
+      register: reset
       ansible.builtin.command: |-
         kubeadm reset --force
 
-    - name: clear ipvs
+    - name: wait for completion
       changed_when: false
+      delay: 10
       failed_when: false
-      ansible.builtin.command: |-
-        ipvs --clear
+      register: result
+      retries: 5
+      until: result.finished
+      ansible.builtin.async_status:
+        jid: "{{ reset.ansible_job_id }}"
