@@ -4,7 +4,6 @@ domain         = "kubernetes.glacion.com"
 libvirt_uri    = "qemu:///system"
 pool           = "default"
 ssh_username   = "glacion"
-worker_vip     = "10.17.3.20"
 
 addresses = [
   "10.17.3.0/24"
