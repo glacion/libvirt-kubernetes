@@ -1,5 +1,0 @@
----
-- name: install keepalived
-  ansible.builtin.apt:
-    name: keepalived
-    update_cache: true
