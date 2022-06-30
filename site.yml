@@ -6,13 +6,13 @@
   tasks:
     - name: install kubeadm configuration
       ansible.builtin.template:
-        src: etc/kubeadm/config.yaml
-        dest: /etc/kubeadm/config.yaml
+        src: etc/kubeadm/config.yml
+        dest: /etc/kubeadm/config.yml
 
     - name: install kube-vip configuration
       ansible.builtin.template:
-        src: etc/kubernetes/manifests/kube-vip.yaml
-        dest: /etc/kubernetes/manifests/kube-vip.yaml
+        src: etc/kubernetes/manifests/kube-vip.yml
+        dest: /etc/kubernetes/manifests/kube-vip.yml
 
     - name: create certificate key
       register: certificate_key
@@ -26,7 +26,7 @@
       failed_when: init.rc != 0 and "[preflight] Running pre-flight checks" not in init.stdout
       ansible.builtin.command: |-
         kubeadm init
-        --config=/etc/kubeadm/config.yaml
+        --config=/etc/kubeadm/config.yml
 
     - name: retrieve CA cert hash
       changed_when: false
@@ -68,8 +68,8 @@
 
     - name: install kube-vip configuration
       ansible.builtin.template:
-        src: etc/kubernetes/manifests/kube-vip.yaml
-        dest: /etc/kubernetes/manifests/kube-vip.yaml
+        src: etc/kubernetes/manifests/kube-vip.yml
+        dest: /etc/kubernetes/manifests/kube-vip.yml
 
     - name: create kubeconfig path
       ansible.builtin.file:
@@ -115,3 +115,13 @@
       ansible.builtin.command: |-
         kubectl label nodes {{ item }} node-role.kubernetes.io/worker=worker
 
+- name: download kubeconfig
+  become: true
+  run_once: true
+  hosts: controller
+  tasks:
+    - name: download kubeconfig
+      ansible.builtin.fetch:
+        flat: true
+        src: /etc/kubernetes/admin.conf
+        dest: build/{{ cluster_name }}.yml
