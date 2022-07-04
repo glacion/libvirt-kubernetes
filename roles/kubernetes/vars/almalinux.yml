@@ -1,11 +1,14 @@
 ---
+systemd_disable:
+  - iscsi
+
 rpm_install:
   - bash-completion
   - conntrack-tools
   - container-selinux
-  - ethtool 
+  - ethtool
   - iproute-tc
-  - ipvsadm
+  - iscsi-initiator-utils
   - qemu-guest-agent
   - socat
 

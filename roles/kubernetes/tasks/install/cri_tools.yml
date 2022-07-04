@@ -32,7 +32,7 @@
     group: root
     mode: 0755
     owner: root
-    remote_src: yes
+    remote_src: true
     src: /tmp/crictl-v{{ cri_tools_version }}-linux-{{ go_arch }}.tar.gz
 
 - name: get critest checksum
@@ -58,5 +58,5 @@
     group: root
     mode: 0755
     owner: root
-    remote_src: yes
+    remote_src: true
     src: /tmp/critest-v{{ cri_tools_version }}-linux-{{ go_arch }}.tar.gz

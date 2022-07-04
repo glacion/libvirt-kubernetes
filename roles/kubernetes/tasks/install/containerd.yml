@@ -44,7 +44,7 @@
     group: root
     mode: 0755
     owner: root
-    remote_src: yes
+    remote_src: true
     src: /tmp/containerd-{{ containerd_version }}-linux-{{ go_arch }}.tar.gz
 
 - name: download nerdctl archive
@@ -65,7 +65,7 @@
     group: root
     mode: 0755
     owner: root
-    remote_src: yes
+    remote_src: true
     src: /tmp/nerdctl-{{ nerdctl_version }}-linux-{{ go_arch }}.tar.gz
     include:
       - nerdctl

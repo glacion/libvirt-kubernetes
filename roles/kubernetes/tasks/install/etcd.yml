@@ -17,7 +17,7 @@
     group: root
     mode: 0755
     owner: root
-    remote_src: yes
+    remote_src: true
     src: /tmp/etcd-v{{ etcd_version }}-linux-{{ go_arch }}.tar.gz
     include:
       - etcd-v{{ etcd_version }}-linux-{{ go_arch }}/etcd

@@ -44,3 +44,9 @@
   ansible.builtin.systemd:
     enabled: true
     name: qemu-guest-agent
+
+- name: disable unnecessary services
+  loop: "{{ systemd_disable }}"
+  ansible.builtin.systemd:
+    enabled: false
+    name: "{{ item }}"

@@ -28,5 +28,5 @@
     group: root
     mode: 0755
     owner: root
-    remote_src: yes
+    remote_src: true
     src: /tmp/cni-plugins-linux-{{ go_arch }}-v{{ cni_plugins_version }}.tgz

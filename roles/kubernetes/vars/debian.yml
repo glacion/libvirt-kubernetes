@@ -1,10 +1,10 @@
 ---
 apt_install:
   - bash-completion
-  - cloud-init 
+  - cloud-init
   - conntrack
   - ethtool
-  - ipvsadm
+  - open-iscsi
   - qemu-guest-agent
   - socat
 
@@ -22,3 +22,6 @@ apt_remove:
   - rsyslog
   - tasksel
   - wamerican
+
+systemd_disable:
+  - iscsid

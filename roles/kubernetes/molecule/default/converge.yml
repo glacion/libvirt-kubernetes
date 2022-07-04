@@ -1,7 +1,7 @@
 ---
 - name: Converge
   any_errors_fatal: true
-  become: yes
+  become: true
   hosts: all
   roles:
     - glacion.kubernetes
