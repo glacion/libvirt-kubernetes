@@ -1,6 +1,6 @@
 ---
 - name: reset cluster
-  become: yes
+  become: true
   hosts: all
   tasks:
     - name: kubeadm reset

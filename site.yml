@@ -1,6 +1,6 @@
 ---
 - name: bootstrap
-  become: yes
+  become: true
   run_once: true
   hosts: controller
   tasks:
@@ -50,7 +50,7 @@
         kubeadm token create
 
 - name: control plane
-  become: yes
+  become: true
   hosts: controller
   tasks:
     - name: join node to control plane
@@ -89,7 +89,7 @@
         state: link
 
 - name: worker plane
-  become: yes
+  become: true
   hosts: worker
   tasks:
     - name: join node to worker plane
@@ -103,7 +103,7 @@
         --discovery-token-ca-cert-hash=sha256:{{ hostvars[groups['controller'][0]].ca_cert_hash.stdout }}
 
 - name: label worker nodes
-  become: yes
+  become: true
   run_once: true
   hosts: controller
   tasks:
