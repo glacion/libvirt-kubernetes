@@ -1,6 +1,6 @@
 .PHONY: all cluster destroy image infra reset softreset
 
-all: image cluster charts
+all: prepare image cluster charts
 
 charts:
 	.venv/bin/ansible-playbook -i inventory/inventory.cfg charts.yml
