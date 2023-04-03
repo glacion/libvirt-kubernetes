@@ -1,32 +1,33 @@
+# vi: set ft=yaml.ansible :
 ---
-- name: create necessary directories
+- name: Create necessary directories
   loop:
     - /etc/cni/net.d
     - /opt/cni/bin
   ansible.builtin.file:
     group: root
-    mode: 0755
+    mode: "0755"
     owner: root
     path: "{{ item }}"
     state: directory
 
-- name: download CNI plugins archive
+- name: Download CNI plugins archive
   ansible.builtin.get_url:
     checksum: "sha256:\
                https://github.com/containernetworking/plugins/releases/download/v{{ cni_plugins_version }}/\
                cni-plugins-linux-{{ go_arch }}-v{{ cni_plugins_version }}.tgz.sha256"
     dest: /tmp
     group: root
-    mode: 0644
+    mode: "0644"
     owner: root
     url: "https://github.com/containernetworking/plugins/releases/download/v{{ cni_plugins_version }}/\
           cni-plugins-linux-{{ go_arch }}-v{{ cni_plugins_version }}.tgz"
 
-- name: extract CNI plugins archive
+- name: Extract CNI plugins archive
   ansible.builtin.unarchive:
     dest: /opt/cni/bin
     group: root
-    mode: 0755
+    mode: "0755"
     owner: root
     remote_src: true
     src: /tmp/cni-plugins-linux-{{ go_arch }}-v{{ cni_plugins_version }}.tgz

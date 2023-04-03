@@ -1,3 +1,4 @@
+# vi: set ft=yaml.ansible :
 ---
 cni_cidr: 10.69.0.0/16
 

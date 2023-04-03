@@ -1,9 +1,10 @@
+# vi: set ft=yaml.ansible :
 ---
-- name: reset cluster
+- name: Reset cluster
   become: true
   hosts: all
   tasks:
-    - name: kubeadm reset
+    - name: Kubeadm reset
       async: 600
       changed_when: false
       failed_when: false
@@ -12,7 +13,7 @@
       ansible.builtin.command: |-
         kubeadm reset --force
 
-    - name: wait for completion
+    - name: Wait for completion
       changed_when: false
       delay: 10
       failed_when: false

@@ -1,5 +1,6 @@
+# vi: set ft=yaml.ansible :
 ---
-- name: create directories
+- name: Create directories
   loop:
     - /etc/kubeadm
     - /etc/kubernetes/manifests
@@ -7,68 +8,68 @@
     - /usr/local/lib/systemd/system/kubelet.service.d
   ansible.builtin.file:
     group: root
-    mode: 0755
+    mode: "0755"
     owner: root
     path: "{{ item }}"
     state: directory
 
-- name: push systemd service configuration
+- name: Push systemd service configuration
   loop:
     - usr/local/lib/systemd/system/kubelet.service
     - usr/local/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
   ansible.builtin.copy:
     dest: /{{ item }}
     group: root
-    mode: 0644
+    mode: "0644"
     owner: root
     src: "{{ item }}"
 
-- name: get kubectl checksum
+- name: Get kubectl checksum
   register: kubectl_sha256
   ansible.builtin.uri:
     return_content: true
     url: https://dl.k8s.io/v{{ kubernetes_version }}/bin/linux/{{ go_arch }}/kubectl.sha256
 
-- name: install kubectl
+- name: Install kubectl
   ansible.builtin.get_url:
     checksum: sha256:{{ kubectl_sha256.content | trim }}
     dest: /usr/local/bin/kubectl
-    mode: 0755
+    mode: "0755"
     url: https://dl.k8s.io/v{{ kubernetes_version }}/bin/linux/{{ go_arch }}/kubectl
 
-- name: get kubeadm checksum
+- name: Get kubeadm checksum
   register: kubeadm_sha256
   ansible.builtin.uri:
     return_content: true
     url: https://dl.k8s.io/v{{ kubernetes_version }}/bin/linux/{{ go_arch }}/kubeadm.sha256
 
-- name: install kubeadm
+- name: Install kubeadm
   ansible.builtin.get_url:
     checksum: sha256:{{ kubeadm_sha256.content | trim }}
     dest: /usr/local/bin/kubeadm
-    mode: 0755
+    mode: "0755"
     url: https://dl.k8s.io/v{{ kubernetes_version }}/bin/linux/{{ go_arch }}/kubeadm
 
-- name: get kubelet checksum
+- name: Get kubelet checksum
   register: kubelet_sha256
   ansible.builtin.uri:
     return_content: true
     url: https://dl.k8s.io/v{{ kubernetes_version }}/bin/linux/{{ go_arch }}/kubelet.sha256
 
-- name: install kubelet
+- name: Install kubelet
   ansible.builtin.get_url:
     checksum: sha256:{{ kubelet_sha256.content | trim }}
     dest: /usr/local/bin/kubelet
-    mode: 0755
+    mode: "0755"
     url: https://dl.k8s.io/v{{ kubernetes_version }}/bin/linux/{{ go_arch }}/kubelet
 
-- name: enable service
+- name: Enable service
   ansible.builtin.systemd:
     daemon_reload: true
     enabled: true
     name: kubelet
 
-- name: download kubernetes containers
+- name: Download kubernetes containers
   changed_when: false
   ansible.builtin.command: /usr/local/bin/kubeadm \
     config images pull \

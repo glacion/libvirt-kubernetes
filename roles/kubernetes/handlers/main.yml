@@ -1,10 +1,11 @@
+# vi: set ft=yaml.ansible :
 ---
-- name: reload modules
+- name: Reload modules
   ansible.builtin.systemd:
     name: systemd-modules-load
     state: restarted
 
-- name: reload sysctl
+- name: Reload sysctl
   ansible.builtin.systemd:
     name: systemd-sysctl
     state: restarted

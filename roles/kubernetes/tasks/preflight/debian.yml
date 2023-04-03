@@ -1,51 +1,52 @@
+# vi: set ft=yaml.ansible :
 ---
-- name: remove unwanted configuration files
+- name: Remove unwanted configuration files
   loop:
     - /etc/apt/apt.conf.d/70debconf
   ansible.builtin.file:
     path: "{{ item }}"
     state: absent
 
-- name: push apt configuration
+- name: Push apt configuration
   ansible.builtin.copy:
     dest: /etc/apt/apt.conf.d/99minify
     group: root
-    mode: 0644
+    mode: "0644"
     owner: root
     src: etc/apt/apt.conf.d/99minify
 
-- name: push apt sources list
+- name: Push apt sources list
   ansible.builtin.template:
     dest: /etc/apt/sources.list
     group: root
-    mode: 0644
+    mode: "0644"
     owner: root
     src: etc/apt/sources.list
 
-- name: clear packages
+- name: Clear packages
   ansible.builtin.apt:
     pkg: "{{ apt_remove }}"
     purge: true
     state: absent
 
-- name: upgrade system
+- name: Upgrade system
   ansible.builtin.apt:
     autoclean: true
     autoremove: true
     update_cache: true
     upgrade: dist
 
-- name: install tools
+- name: Install tools
   ansible.builtin.apt:
     pkg: "{{ apt_install }}"
     state: present
 
-- name: enable QEMU guest agent
+- name: Enable QEMU guest agent
   ansible.builtin.systemd:
     enabled: true
     name: qemu-guest-agent
 
-- name: disable unnecessary services
+- name: Disable unnecessary services
   loop: "{{ systemd_disable }}"
   ansible.builtin.systemd:
     enabled: false

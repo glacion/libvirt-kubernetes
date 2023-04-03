@@ -1,16 +1,18 @@
+# vi: set ft=yaml.ansible :
 ---
-- name: prepare image
+- name: Prepare image
   any_errors_fatal: true
   hosts: default
   become: true
   roles:
-    - ../roles/kubernetes
+    - kubernetes
 
 # TODO: Clean _everything_
-- name: clean up
+- name: Clean up
   any_errors_fatal: true
-  hosts: default
   become: true
+  hosts: default
   tasks:
-    - name: clear cloud-init
+    - name: Clear cloud-init
+      changed_when: false
       ansible.builtin.command: cloud-init clean

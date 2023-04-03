@@ -52,8 +52,9 @@ build {
   ]
 
   provisioner "ansible" {
+    ansible_env_vars    = ["ANSIBLE_ROLES_PATH=../roles"]
     command             = "../.venv/bin/ansible-playbook"
-    inventory_directory = "../inventory/"
+    inventory_directory = "../inventory"
     playbook_file       = "site.yml"
     use_proxy           = false
     user                = var.username

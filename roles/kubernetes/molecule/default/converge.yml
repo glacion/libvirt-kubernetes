@@ -1,7 +1,10 @@
+# vi: set ft=yaml.ansible :
 ---
 - name: Converge
   any_errors_fatal: true
   become: true
   hosts: all
-  roles:
-    - glacion.kubernetes
+  tasks:
+    - name: Include role
+      ansible.builtin.include_role:
+        name: glacion.kubernetes

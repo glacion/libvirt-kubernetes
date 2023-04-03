@@ -1,3 +1,4 @@
+# vi: set ft=yaml.ansible :
 ---
 collections:
   - name: kubernetes.core

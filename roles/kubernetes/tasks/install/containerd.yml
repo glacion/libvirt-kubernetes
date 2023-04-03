@@ -1,76 +1,77 @@
+# vi: set ft=yaml.ansible :
 ---
-- name: create configuration directory
+- name: Create configuration directory
   ansible.builtin.file:
     group: root
-    mode: 0755
+    mode: "0755"
     owner: root
     path: /etc/containerd
     state: directory
 
-- name: push configuration
+- name: Push configuration
   loop:
     - etc/containerd/config.toml
     - etc/cni/net.d/10-containerd.conflist
   ansible.builtin.template:
     dest: /{{ item }}
     group: root
-    mode: 0644
+    mode: "0644"
     owner: root
     src: "{{ item }}"
 
-- name: push service definition
+- name: Push service definition
   ansible.builtin.copy:
     dest: /usr/local/lib/systemd/system/containerd.service
     group: root
-    mode: 0644
+    mode: "0644"
     owner: root
     src: usr/local/lib/systemd/system/containerd.service
 
-- name: download containerd archive
+- name: Download containerd archive
   ansible.builtin.get_url:
     checksum: "sha256:\
                https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/\
                containerd-{{ containerd_version }}-linux-{{ go_arch }}.tar.gz.sha256sum"
     dest: /tmp
     group: root
-    mode: 0644
+    mode: "0644"
     owner: root
     url: "https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/\
           containerd-{{ containerd_version }}-linux-{{ go_arch }}.tar.gz"
 
-- name: extract containerd archive
+- name: Extract containerd archive
   ansible.builtin.unarchive:
     dest: /usr/local
     group: root
-    mode: 0755
+    mode: "0755"
     owner: root
     remote_src: true
     src: /tmp/containerd-{{ containerd_version }}-linux-{{ go_arch }}.tar.gz
 
-- name: download nerdctl archive
+- name: Download nerdctl archive
   ansible.builtin.get_url:
     checksum: "sha256:\
                https://github.com/containerd/nerdctl/releases/download/v{{ nerdctl_version }}/\
                SHA256SUMS"
     dest: /tmp
     group: root
-    mode: 0644
+    mode: "0644"
     owner: root
     url: "https://github.com/containerd/nerdctl/releases/download/v{{ nerdctl_version }}/\
           nerdctl-{{ nerdctl_version }}-linux-{{ go_arch }}.tar.gz"
 
-- name: extract nerdctl archive
+- name: Extract nerdctl archive
   ansible.builtin.unarchive:
     dest: /usr/local/bin
     group: root
-    mode: 0755
+    mode: "0755"
     owner: root
     remote_src: true
     src: /tmp/nerdctl-{{ nerdctl_version }}-linux-{{ go_arch }}.tar.gz
     include:
       - nerdctl
 
-- name: enable service
+- name: Enable service
   ansible.builtin.systemd:
     daemon_reload: true
     enabled: true

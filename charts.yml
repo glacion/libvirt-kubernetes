@@ -1,28 +1,27 @@
+# vi: set ft=yaml.ansible :
 ---
-- name: prepare
+- name: Prepare
   hosts: localhost
   connection: local
-  environment:
-    KUBECONFIG: build/{{ cluster_name }}.yml
   tasks:
-    - name: install helm diff
+    - name: Install helm diff
       kubernetes.core.helm_plugin:
         plugin_path: https://github.com/databus23/helm-diff
         state: present
 
-- name: install calico
+- name: Install calico
   hosts: localhost
   connection: local
   environment:
     KUBECONFIG: build/{{ cluster_name }}.yml
   tasks:
-    - name: create tigera-operator namespace
+    - name: Create tigera-operator namespace
       kubernetes.core.k8s:
         state: present
         kind: Namespace
         name: tigera-operator
 
-    - name: create service configmap
+    - name: Create service configmap
       kubernetes.core.k8s:
         state: present
         definition:
@@ -35,12 +34,12 @@
             KUBERNETES_SERVICE_HOST: "{{ control_plane_endpoint }}"
             KUBERNETES_SERVICE_PORT: "6443"
 
-    - name: install chart repository
+    - name: Install chart repository
       kubernetes.core.helm_repository:
         name: projectcalico
         repo_url: https://projectcalico.docs.tigera.io/charts
 
-    - name: install Calico helm chart
+    - name: Install Calico helm chart
       kubernetes.core.helm:
         chart_ref: projectcalico/tigera-operator
         chart_version: v3.23.1
@@ -58,24 +57,24 @@
                 - cidr: "{{ pod_cidr }}"
                   encapsulation: VXLANCrossSubnet
 
-- name: install Longhorn
+- name: Install Longhorn
   hosts: localhost
   connection: local
   environment:
     KUBECONFIG: build/{{ cluster_name }}.yml
   tasks:
-    - name: create longhorn-system namespace
+    - name: Create longhorn-system namespace
       kubernetes.core.k8s:
         state: present
         kind: Namespace
         name: longhorn-system
 
-    - name: install chart repository
+    - name: Install chart repository
       kubernetes.core.helm_repository:
         name: longhorn
         repo_url: https://charts.longhorn.io
 
-    - name: install Longhorn helm chart
+    - name: Install Longhorn helm chart
       kubernetes.core.helm:
         chart_ref: longhorn/longhorn
         chart_version: 1.3.0

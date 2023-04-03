@@ -1,33 +1,34 @@
+# vi: set ft=yaml.ansible :
 ---
-- name: import os specific variables
+- name: Import os specific variables
   ansible.builtin.include_vars: vars/{{ ansible_distribution | lower }}.yml
 
-- name: preflight
+- name: Preflight
   ansible.builtin.include_tasks: preflight/main.yml
 
-- name: install completion scripts
+- name: Install completion scripts
   ansible.builtin.include_tasks: install/bash_completion.yml
 
-- name: install CNI plugins
+- name: Install CNI plugins
   when: install_cni_plugins
   ansible.builtin.include_tasks: install/cni_plugins.yml
 
-- name: install containerd
+- name: Install containerd
   when: install_containerd
   ansible.builtin.include_tasks: install/containerd.yml
 
-- name: install cri_tools
+- name: Install cri_tools
   when: install_cri_tools
   ansible.builtin.include_tasks: install/cri_tools.yml
 
-- name: install etcd
+- name: Install etcd
   when: install_etcd
   ansible.builtin.include_tasks: install/etcd.yml
 
-- name: install runc
+- name: Install runc
   when: install_runc
   ansible.builtin.include_tasks: install/runc.yml
 
-- name: install kubernetes
+- name: Install kubernetes
   when: install_kubernetes
   ansible.builtin.include_tasks: install/kubernetes.yml

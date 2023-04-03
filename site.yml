@@ -1,59 +1,65 @@
+# vi: set ft=yaml.ansible :
 ---
-- name: bootstrap
+- name: Bootstrap
   become: true
   run_once: true
   hosts: controller
   tasks:
-    - name: install kubeadm configuration
+    - name: Install kubeadm configuration
       ansible.builtin.template:
-        src: etc/kubeadm/config.yml
         dest: /etc/kubeadm/config.yml
+        mode: "0600"
+        src: etc/kubeadm/config.yml
 
-    - name: install kube-vip configuration
+    - name: Install kube-vip configuration
       ansible.builtin.template:
-        src: etc/kubernetes/manifests/kube-vip.yml
         dest: /etc/kubernetes/manifests/kube-vip.yml
+        mode: "0600"
+        src: etc/kubernetes/manifests/kube-vip.yml
 
-    - name: create certificate key
+    - name: Create certificate key
       register: certificate_key
       changed_when: false
       ansible.builtin.command: |-
         kubeadm certs certificate-key
 
-    - name: initialize cluster
+    - name: Initialize cluster
       register: init
       changed_when: init.rc == 0
-      failed_when: init.rc != 0 and "[preflight] Running pre-flight checks" not in init.stdout
+      failed_when: init.rc != 0 and "/etc/kubernetes/manifests/kube-apiserver.yaml already exists" not in init.stderr
       ansible.builtin.command: |-
         kubeadm init
         --config=/etc/kubeadm/config.yml
 
-    - name: retrieve CA cert hash
+    - name: Retrieve CA cert hash
       changed_when: false
       register: ca_cert_hash
+      args:
+        executable: /bin/bash
       ansible.builtin.shell: |-
+        set -euo pipefail
         openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt |
         openssl rsa -pubin -outform der 2>/dev/null |
         openssl dgst -sha256 -hex |
         sed 's/^.* //'
 
-    - name: upload kubernetes certs
+    - name: Upload kubernetes certs
       changed_when: false
       ansible.builtin.command: |-
         kubeadm init phase upload-certs --upload-certs
         --certificate-key={{ certificate_key.stdout }}
 
-    - name: create join token
+    - name: Create join token
       register: join_token
       changed_when: false
       ansible.builtin.command: |-
         kubeadm token create
 
-- name: control plane
+- name: Control plane
   become: true
   hosts: controller
   tasks:
-    - name: join node to control plane
+    - name: Join node to control plane
       register: join
       when: ansible_host != groups['controller'][0]
       changed_when: join.rc == 0
@@ -66,33 +72,34 @@
         --discovery-token-ca-cert-hash=sha256:{{ ca_cert_hash.stdout }}
         --certificate-key={{ certificate_key.stdout }}
 
-    - name: install kube-vip configuration
+    - name: Install kube-vip configuration
       ansible.builtin.template:
-        src: etc/kubernetes/manifests/kube-vip.yml
         dest: /etc/kubernetes/manifests/kube-vip.yml
+        mode: "0600"
+        src: etc/kubernetes/manifests/kube-vip.yml
 
-    - name: create kubeconfig path
+    - name: Create kubeconfig path
       ansible.builtin.file:
         group: root
-        mode: 0700
+        mode: "0700"
         owner: root
         path: /root/.kube
         state: directory
 
-    - name: link admin credentials for root user
+    - name: Link admin credentials for root user
       ansible.builtin.file:
         dest: /root/.kube/config
         group: root
-        mode: 0600
+        mode: "0600"
         owner: root
         src: /etc/kubernetes/admin.conf
         state: link
 
-- name: worker plane
+- name: Worker plane
   become: true
   hosts: worker
   tasks:
-    - name: join node to worker plane
+    - name: Join node to worker plane
       register: join_worker
       changed_when: join_worker.rc == 0
       failed_when: join_worker.rc != 0 and "[preflight] Running pre-flight checks" not in join_worker.stdout
@@ -102,25 +109,25 @@
         --token={{ hostvars[groups['controller'][0]].join_token.stdout }}
         --discovery-token-ca-cert-hash=sha256:{{ hostvars[groups['controller'][0]].ca_cert_hash.stdout }}
 
-- name: label worker nodes
+- name: Label worker nodes
   become: true
   run_once: true
   hosts: controller
   tasks:
-    - name: add worker node role
+    - name: Add worker node role
       register: role_worker
       loop: "{{ groups['worker'] }}"
       changed_when: role_worker.rc == 0
-      failed_when: role_worker.rc !=0 and "already has a value" not in role_worker.stderr
+      failed_when: role_worker.rc != 0 and "already has a value" not in role_worker.stderr
       ansible.builtin.command: |-
         kubectl label nodes {{ item }} node-role.kubernetes.io/worker=worker
 
-- name: download kubeconfig
+- name: Download kubeconfig
   become: true
   run_once: true
   hosts: controller
   tasks:
-    - name: download kubeconfig
+    - name: Download kubeconfig
       ansible.builtin.fetch:
         flat: true
         src: /etc/kubernetes/admin.conf

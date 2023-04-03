@@ -1,3 +1,5 @@
+# vi: set ft=yaml.ansible :
+---
 cluster_name: kubernetes.glacion.com
 control_plane_endpoint: 192.168.8.10
 kube_vip_image: ghcr.io/kube-vip/kube-vip:v0.4.4
