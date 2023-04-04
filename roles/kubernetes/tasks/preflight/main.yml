@@ -1,31 +1,12 @@
 # vi: set ft=yaml.ansible :
 ---
 - name: Create systemd directories
-  loop:
-    - /usr/local/lib/environment.d
-    - /usr/local/lib/systemd/system
   ansible.builtin.file:
     group: root
     mode: "0755"
     owner: root
-    path: "{{ item }}"
+    path: /usr/local/lib/systemd/system
     state: directory
-
-- name: Push environment configuration
-  ansible.builtin.copy:
-    dest: /usr/local/lib/environment.d/99-localpath.conf
-    group: root
-    mode: "0644"
-    owner: root
-    src: usr/local/lib/environment.d/99-localpath.conf
-
-- name: Push sudo configuration
-  ansible.builtin.copy:
-    dest: /etc/sudoers.d/localpath
-    group: root
-    mode: "0440"
-    owner: root
-    src: etc/sudoers.d/localpath
 
 - name: Push kernel module configuration
   notify: Reload modules
