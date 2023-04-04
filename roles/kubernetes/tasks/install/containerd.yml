@@ -9,15 +9,12 @@
     state: directory
 
 - name: Push configuration
-  loop:
-    - etc/containerd/config.toml
-    - etc/cni/net.d/10-containerd.conflist
   ansible.builtin.template:
-    dest: /{{ item }}
+    dest: /etc/containerd/config.toml
     group: root
     mode: "0644"
     owner: root
-    src: "{{ item }}"
+    src: etc/containerd/config.toml
 
 - name: Push service definition
   ansible.builtin.copy:
@@ -75,5 +72,4 @@
   ansible.builtin.systemd:
     daemon_reload: true
     enabled: true
-    state: started
     name: containerd

@@ -68,9 +68,3 @@
     daemon_reload: true
     enabled: true
     name: kubelet
-
-- name: Download kubernetes containers
-  changed_when: false
-  ansible.builtin.command: /usr/local/bin/kubeadm \
-    config images pull \
-    --kubernetes-version={{ kubernetes_version }}
