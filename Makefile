@@ -1,4 +1,4 @@
-.PHONY: all cluster destroy image infra reset softreset
+.PHONY: all cluster clean destroy image infra reset softreset
 
 all: prepare image infra cluster charts
 
@@ -7,6 +7,9 @@ charts:
 
 cluster: 
 	.venv/bin/ansible-playbook -i inventory/inventory.cfg site.yml
+
+clean: destroy
+	rm -rf .venv build
 
 destroy:
 	$(MAKE) $(MFLAGS) -C "./infra" destroy

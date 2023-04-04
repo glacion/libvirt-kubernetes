@@ -42,7 +42,7 @@
     - name: Install Calico helm chart
       kubernetes.core.helm:
         chart_ref: projectcalico/tigera-operator
-        chart_version: v3.23.1
+        chart_version: v3.25.1
         name: calico
         release_namespace: tigera-operator
         values:
@@ -77,6 +77,6 @@
     - name: Install Longhorn helm chart
       kubernetes.core.helm:
         chart_ref: longhorn/longhorn
-        chart_version: 1.3.0
+        chart_version: 1.4.1
         name: longhorn
         release_namespace: longhorn-system
