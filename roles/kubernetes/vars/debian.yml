@@ -4,6 +4,7 @@ apt_install:
   - cloud-init
   - conntrack
   - ethtool
+  - nfs-common
   - open-iscsi
   - qemu-guest-agent
   - socat
