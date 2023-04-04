@@ -12,6 +12,12 @@ packer {
   }
 }
 
+locals {
+  date       = timestamp()
+  build_root = "${var.build_root}/${var.distribution}"
+  build_path = "${local.build_root}/${local.date}"
+}
+
 data "sshkey" "key" {}
 
 source "qemu" "image" {
@@ -23,9 +29,9 @@ source "qemu" "image" {
   disk_compression = var.disk_compression
 
   accelerator = "kvm"
-  cpus        = 2
+  cpus        = var.cpus
   headless    = true
-  memory      = 2048
+  memory      = var.memory
 
   output_directory = local.build_path
   vm_name          = "${var.distribution}.qcow2"

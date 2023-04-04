@@ -50,9 +50,3 @@ variable "iso_checksum" {
   // example: https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
   type = string
 }
-
-locals {
-  date       = timestamp()
-  build_root = "${var.build_root}/${var.distribution}"
-  build_path = "${local.build_root}/${local.date}"
-}
