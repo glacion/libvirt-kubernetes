@@ -1,5 +1,10 @@
+{% set seperator = joiner(",") -%}
+---
 apiVersion: v1
 kind: Pod
+annotations:
+  prometheus.io/port: "2112"
+  prometheus.io/scrape: "true"
 metadata:
   name: kube-vip
   namespace: kube-system
@@ -8,25 +13,46 @@ spec:
     - args:
         - manager
       env:
-        - name: vip_arp
-          value: "true"
+        - name: address
+          value: "{{ control_plane_endpoint }}"
         - name: port
           value: "6443"
-        - name: vip_interface
-          value: "{{ ansible_default_ipv4.interface }}"
-        - name: vip_cidr
-          value: "32"
+        - name: prometheus_server
+          value: ":2112"
         - name: cp_enable
           value: "true"
         - name: cp_namespace
           value: kube-system
-        - name: vip_ddns
-          value: "false"
         - name: svc_enable
           value: "true"
-        - name: address
-          value: "{{ control_plane_endpoint }}"
-      image: "{{ kube_vip_image }}"
+        - name: vip_arp
+          value: "false"
+        - name: vip_interface
+          value: "{{ ansible_default_ipv4.interface }}"
+        - name: vip_cidr
+          value: "32"
+        - name: vip_ddns
+          value: "false"
+        - name: bgp_enable
+          value: "true"
+        - name: bgp_routerid
+          value: "{{ ansible_default_ipv4.address }}"
+        - name: bgp_as
+          value: "{{ local_as }}"
+        - name: bgp_peeraddress
+        - name: bgp_peerpass
+        - name: bgp_peeras
+          value: "{{ local_as }}"
+        - name: bgp_peers
+          value: {% for host in groups['controller'] -%}
+                  {{ seperator() -}}
+                  {{ 
+                    "%s:%s::%s" | 
+                    format(hostvars[host].ansible_default_ipv4.address, local_as, bgp_multihop) 
+                  }}
+                {%- endfor %}
+
+      image: ghcr.io/kube-vip/kube-vip:v{{ kube_vip_version }}
       imagePullPolicy: Always
       name: kube-vip
       securityContext:
@@ -34,6 +60,7 @@ spec:
           add:
             - NET_ADMIN
             - NET_RAW
+            - SYS_TIME
       volumeMounts:
         - mountPath: /etc/kubernetes/admin.conf
           name: kubeconfig

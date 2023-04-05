@@ -1,13 +1,15 @@
 # vi: set ft=yaml.ansible :
 ---
+bgp_multihop: false
 cluster_name: kubernetes.glacion.com
 cni_plugins_version: 1.2.0
 containerd_version: 1.7.0
 control_plane_endpoint: 192.168.8.10
 cri_tools_version: 1.26.1
 etcd_version: 3.5.7
-kube_vip_image: ghcr.io/kube-vip/kube-vip:v0.5.11
+kube_vip_version: 0.5.11
 kubernetes_version: 1.26.3
+local_as: 65000
 nerdctl_version: 1.2.1
 pod_cidr: 10.244.0.0/12
 runc_version: 1.1.5
