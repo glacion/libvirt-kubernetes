@@ -13,6 +13,11 @@
       ansible.builtin.command: |-
         kubeadm reset --force
 
+    - name: Delete admin credentials
+      ansible.builtin.file:
+        path: /root/.kube
+        state: absent
+
     - name: Wait for completion
       changed_when: false
       delay: 10
