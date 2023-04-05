@@ -3,7 +3,7 @@ ansible_user=${ ssh_username }
 
 [all]
 %{ for instance in instances ~}
-${ instance.fqdn }
+${ instance.fqdn } ansible_host=${~ instance.addresses[0] }
 %{ endfor ~}
 
 %{ for group in groups ~}
