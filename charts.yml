@@ -9,74 +9,145 @@
         plugin_path: https://github.com/databus23/helm-diff
         state: present
 
-- name: Install calico
+    - name: Update the repository cache
+      kubernetes.core.helm:
+        name: dummy
+        namespace: default
+        state: absent
+        update_repo_cache: true
+
+- name: Install flannel
   hosts: localhost
   connection: local
   environment:
     KUBECONFIG: build/{{ cluster_name }}.yml
   tasks:
-    - name: Create tigera-operator namespace
+    - name: Create kube-flannel namespace
       kubernetes.core.k8s:
         state: present
         kind: Namespace
-        name: tigera-operator
-
-    - name: Create service configmap
-      kubernetes.core.k8s:
-        state: present
-        definition:
-          apiVersion: v1
-          kind: ConfigMap
-          metadata:
-            name: kubernetes-services-endpoint
-            namespace: tigera-operator
-          data:
-            KUBERNETES_SERVICE_HOST: "{{ control_plane_endpoint }}"
-            KUBERNETES_SERVICE_PORT: "6443"
+        name: kube-flannel
 
     - name: Install chart repository
       kubernetes.core.helm_repository:
-        name: projectcalico
-        repo_url: https://projectcalico.docs.tigera.io/charts
+        name: flannel
+        repo_url: https://flannel-io.github.io/flannel
 
-    - name: Install Calico helm chart
+    - name: Install Flannel helm chart
       kubernetes.core.helm:
-        chart_ref: projectcalico/tigera-operator
-        chart_version: v3.25.1
-        name: calico
-        release_namespace: tigera-operator
+        chart_ref: flannel/flannel
+        chart_version: v0.21.4
+        name: flannel
+        release_namespace: kube-flannel
+        wait: true
         values:
-          apiServer:
-            enabled: true
-          installation:
-            nodeMetricsPort: 9092
-            typhaMetricsPort: 9093
-            calicoNetwork:
-              linuxDataplane: BPF
-              ipPools:
-                - cidr: "{{ pod_cidr }}"
-                  encapsulation: VXLANCrossSubnet
+          podCidr: "{{ pod_cidr }}"
+          flannel:
+            backend: "host-gw"
 
-- name: Install Longhorn
+- name: Install NGINX Ingress Controller
   hosts: localhost
   connection: local
   environment:
     KUBECONFIG: build/{{ cluster_name }}.yml
   tasks:
-    - name: Create longhorn-system namespace
+    - name: Create kube-ingress namespace
       kubernetes.core.k8s:
         state: present
         kind: Namespace
-        name: longhorn-system
+        name: kube-ingress
 
     - name: Install chart repository
       kubernetes.core.helm_repository:
-        name: longhorn
-        repo_url: https://charts.longhorn.io
+        name: ingress-nginx
+        repo_url: https://kubernetes.github.io/ingress-nginx
 
-    - name: Install Longhorn helm chart
+    - name: Install nginx-ingress helm chart
       kubernetes.core.helm:
-        chart_ref: longhorn/longhorn
-        chart_version: 1.4.1
-        name: longhorn
-        release_namespace: longhorn-system
+        chart_ref: ingress-nginx/ingress-nginx
+        chart_version: 4.6.0
+        name: nginx
+        release_namespace: kube-ingress
+        wait: true
+        values:
+          controller:
+            kind: DaemonSet
+            ingressClassResource:
+              default: true
+            metrics:
+              enabled: true
+            # service:
+            #   loadBalancerIP: "{{ control_plane_endpoint }}"
+
+# - name: Install calico
+#   hosts: localhost
+#   connection: local
+#   environment:
+#     KUBECONFIG: build/{{ cluster_name }}.yml
+#   tasks:
+#     - name: Create tigera-operator namespace
+#       kubernetes.core.k8s:
+#         state: present
+#         kind: Namespace
+#         name: tigera-operator
+
+#     - name: Create service configmap
+#       kubernetes.core.k8s:
+#         state: present
+#         definition:
+#           apiVersion: v1
+#           kind: ConfigMap
+#           metadata:
+#             name: kubernetes-services-endpoint
+#             namespace: tigera-operator
+#           data:
+#             KUBERNETES_SERVICE_HOST: "{{ control_plane_endpoint }}"
+#             KUBERNETES_SERVICE_PORT: "6443"
+
+#     - name: Install chart repository
+#       kubernetes.core.helm_repository:
+#         name: projectcalico
+#         repo_url: https://projectcalico.docs.tigera.io/charts
+
+#     - name: Install Calico helm chart
+#       kubernetes.core.helm:
+#         chart_ref: projectcalico/tigera-operator
+#         chart_version: v3.25.1
+#         name: calico
+#         release_namespace: tigera-operator
+#         values:
+#           apiServer:
+#             enabled: true
+#           installation:
+#             nodeMetricsPort: 9092
+#             typhaMetricsPort: 9093
+#             calicoNetwork:
+#               linuxDataplane: BPF
+#               ipPools:
+#                 - cidr: "{{ pod_cidr }}"
+#                   encapsulation: VXLANCrossSubnet
+
+# - name: Install Longhorn
+#   hosts: localhost
+#   connection: local
+#   environment:
+#     KUBECONFIG: build/{{ cluster_name }}.yml
+#   tasks:
+#     - name: Create longhorn-system namespace
+#       kubernetes.core.k8s:
+#         state: present
+#         kind: Namespace
+#         name: longhorn-system
+
+#     - name: Install chart repository
+#       kubernetes.core.helm_repository:
+#         name: longhorn
+#         repo_url: https://charts.longhorn.io
+
+#     - name: Install Longhorn helm chart
+#       kubernetes.core.helm:
+#         chart_ref: longhorn/longhorn
+#         chart_version: 1.4.1
+#         name: longhorn
+#         release_namespace: longhorn-system
+

@@ -11,7 +11,7 @@ cluster:
 clean: destroy
 	rm -rf .venv build
 
-destroy:
+nuke:
 	$(MAKE) $(MFLAGS) -C "./infra" destroy
 
 image:
@@ -26,7 +26,7 @@ prepare:
 	.venv/bin/pip install --requirement requirements.txt
 	.venv/bin/ansible-galaxy collection install --requirements-file requirements.yml
 
-reset: destroy cluster
+reset: nuke infra cluster
 
 softreset:
 	.venv/bin/ansible-playbook -i inventory/inventory.cfg reset.yml
